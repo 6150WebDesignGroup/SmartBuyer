@@ -6,7 +6,6 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerJsdoc = require("swagger-jsdoc");
 
 const bodyParser =  require('body-parser');
-const routes = require('./app/routes/routes');
 const cors = require("cors");
 
 
@@ -18,8 +17,10 @@ mongoose.connect(MongoUrl,{useNewUrlParser:true,useUnifiedTopology: true})
 
 app.use(cors());
 app.use(express.json());
-app.use("/user",require("./app/routes/routes"));
+app.use("/user",require("./app/routes/userRoutes"));
 app.use("/imgs",express.static("imgs"));
+
+
 app.get("/", (req, res) => {
     res.send("test project API");
 })
