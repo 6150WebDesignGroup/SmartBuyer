@@ -17,7 +17,9 @@ mongoose.connect(MongoUrl,{useNewUrlParser:true,useUnifiedTopology: true})
 
 app.use(cors());
 app.use(express.json());
+// set Routes
 app.use("/user",require("./app/routes/userRoutes"));
+
 app.use("/imgs",express.static("imgs"));
 
 
