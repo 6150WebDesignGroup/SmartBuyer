@@ -20,6 +20,7 @@ app.use(express.json());
 // set Routes
 app.use("/user",require("./app/routes/userRoutes"));
 app.use("/admin",require("./app/routes/adminRoutes"));
+app.use('/api/cart', require('./app/routes/cartRoutes'));
 
 
 
