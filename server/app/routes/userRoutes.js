@@ -1,0 +1,117 @@
+const express = require('express');
+const User = require('../model/User');
+const multer = require("multer");
+const bcrypt = require("bcrypt");
+
+const router = express.Router();
+////////////////////////regular format//////////////////////
+const NameReg = /^[a-zA-Z]+$/
+const EmailReg  = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+const pwdReg = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+
+/////////////////// img format////////////////////////////////
+
+
+// RegUser
+router.post("/RegUser",async (req,res)=>{
+    try{
+        const {name , email , pwd, role,phone} = req.body;
+        if(role!=="Admin" && role!=="User"){
+            return res.status(401).send({error:"Invalid Role"});
+        }
+        if(!name.match(NameReg) || !email.match(EmailReg) || !pwd.match(pwdReg)){
+            return res.status(400).json({error:"Validation failed."});
+        }
+        const saltRound = 10;
+        const Newpwd = await bcrypt.hash(pwd,saltRound);
+        const user = new User({
+            name,
+            email,
+            role,
+            phone,
+            pwd:Newpwd
+        });
+        await user.save();
+        res.status(200).json({Message:"User create successfully."});
+    }catch(err){
+        res.status(400).json({error:"Validation failed."});
+    }
+});
+
+//User login
+/**
+ * @param email
+ * @param pwd
+ */
+
+router.post("/Login",async (req,res)=>{
+    const user = await User.findOne({email:req.body.email});
+    if(user==null){
+        return res.status(400).json({error:"User not found"});
+    }
+    if(user.role!=="Admin" && user.role!=="User"){
+        return res.status(401).json({error:"Invalid Role"});
+    }
+    const isMatch = await bcrypt.compare(req.body.pwd, user.pwd);
+    if(isMatch){
+        //session
+        req.session.user = {
+            name: user.name,
+            email: user.email,
+            role: user.role
+        };
+        return res.status(200).json({Message:"logged in",user:user});
+    }
+    else{
+        return res.status(406).json({error:"pwd error"});
+
+    }
+})
+
+/**
+ * userLogout
+ * @param /
+ */
+
+// user logout
+router.post("/logout",async (req,res)=>{
+    //todo
+    // destroy the session
+    req.session.destroy((err) => {
+        if (err) {
+            return res.status(500).json({ error: "Failed to logout" });
+        }
+        res.clearCookie("connect.sid");
+        return res.status(200).json({ message: "Logged out successfully" });
+    });
+})
+
+// setInfo
+router.post("/editUser", async (req, res) => {
+    try {
+        const { email, name, pwd, phone } = req.body;
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        if (typeof name === "string" && name.trim() !== "") {
+            user.name = name.trim();
+        }
+        if (typeof phone === "string" && phone.trim() !== "") {
+            user.phone = phone.trim();
+        }
+        if (typeof pwd === "string" && pwd.trim() !== "") {
+            user.pwd = await bcrypt.hash(pwd, 10);
+        }
+        await user.save();
+        return res.json({ message: "User updated successfully", user });
+    } catch (err) {
+        console.error("Edit user error:", err);
+        return res.status(500).json({ message: "Server error" });
+    }
+});
+
+
+
+
+module.exports = router;
