@@ -7,7 +7,7 @@ const OrderItemSchema = new mongoose.Schema({
 });
 
 const OrderSchema = new mongoose.Schema({
-    status: { type: String, required: true }, // paid, refunding, refunded
+    status: { type: String, required: true }, // paid, refunding, refunded, refused
     productList: [OrderItemSchema],
     createdAt: { type: Date, default: Date.now }
 });

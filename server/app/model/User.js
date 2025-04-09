@@ -9,5 +9,8 @@ const User = new mongoose.Schema({
     role:{type:String,default:null},
 })
 // this will add Id and growth it auto
-User.plugin(AutoIncrement, { inc_field: "Id" });
+User.plugin(AutoIncrement, { inc_field: "UserId" });
 module.exports = mongoose.model("User",User);
+
+
+

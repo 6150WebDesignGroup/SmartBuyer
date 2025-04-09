@@ -229,9 +229,32 @@ router.put("/edit", upload.array("imgFile", 5), async (req, res) => {
 });
 
 
+
 /**
  * delete Product
  */
+router.delete("/delete", async (req, res) => {
+    try {
+        const { id } = req.body;
+
+        if (!id) {
+            return res.status(400).json({ error: "Product ID is required" });
+        }
+
+        const product = await Product.findOne({ Id: id });
+        if (!product) {
+            return res.status(404).json({ error: "Product not found" });
+        }
+
+        await Product.deleteOne({ Id: id });
+
+        return res.status(200).json({ message: "Product deleted successfully" });
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+});
 
 
 

@@ -9,5 +9,5 @@ const PageSetup = new mongoose.Schema({
     lastUpdated: {type: Date},
 })
 // this will add Id and growth it auto
-PageSetup.plugin(AutoIncrement, { inc_field: "Id" });
+PageSetup.plugin(AutoIncrement, { inc_field: "setUpId" });
 module.exports = mongoose.model("PageSetup",PageSetup);

@@ -7,5 +7,5 @@ const ProductCategory = new mongoose.Schema({
 
 })
 // this will add Id and growth it auto
-ProductCategory.plugin(AutoIncrement, { inc_field: "Id" });
+ProductCategory.plugin(AutoIncrement, { inc_field: "ProductCateId" });
 module.exports = mongoose.model("ProductCategory",ProductCategory);

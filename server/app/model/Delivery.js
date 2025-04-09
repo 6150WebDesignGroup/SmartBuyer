@@ -14,5 +14,5 @@ const DeliverySchema = new mongoose.Schema({
 })
 
 // this will add Id and growth it auto
-DeliverySchema.plugin(AutoIncrement, { inc_field: "Id" });
+DeliverySchema.plugin(AutoIncrement, { inc_field: "DeliveryId" });
 module.exports = mongoose.model("Delivery",DeliverySchema);

@@ -64,7 +64,6 @@ router.post("/Login",async (req,res)=>{
     }
     else{
         return res.status(406).json({error:"pwd error"});
-
     }
 })
 
