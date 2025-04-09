@@ -47,7 +47,7 @@ router.post("/uploadBackgroundImg",upload.single("imgFile"),async (req,res)=>{
                 lastUpdated: new Date()
             });
         }
-        const filePath  = '../../imgs'+req.file.filename;
+        const filePath  = '../../imgs/background'+req.file.filename;
         pageImg.BackgroundImg = filePath;
         await pageImg.save();
 
@@ -65,6 +65,8 @@ router.post("/uploadBackgroundImg",upload.single("imgFile"),async (req,res)=>{
 
 })
 
+
+
 /**
  * CarouselImg setUp  每次上传单张图片就好
  */
@@ -80,7 +82,7 @@ router.post("/uploadCarouseImg",upload.single("imgFile"),async (req,res)=>{
                 lastUpdated: new Date()
             });
         }
-        const filePath  = '../../imgs'+req.file.filename;
+        const filePath  = '../../imgs/Carouse'+req.file.filename;
         pageImg.CarouselImg.push(filePath);
         pageImg.lastUpdated = new Date();
         await pageImg.save();
@@ -105,7 +107,32 @@ router.post("/uploadCarouseImg",upload.single("imgFile"),async (req,res)=>{
 
 })
 
+/**
+ * CarouseImg delete
+ */
 
+router.post("/editCarouseImg",upload.single("imgFile"),async (req,res)=>{
+    try{
+        const deleteCarouseImg = req.body.deletImg;
+        const pageImg = await PageSetup.findOne();
+        pageImg.CarouselImg = pageImg.CarouselImg.filter(imgPath => imgPath !== deleteCarouseImg);
+
+        pageImg.lastUpdated = new Date();
+
+        await pageImg.save();
+
+    }catch (err){
+        if(err.message === "Only JPEG/PNG/GIF files are allowed."){
+            return res.status(400).json({
+                error:"Only JPEG/PNG/GIF files are allowed."
+            });
+        }
+        return res.status(500).json({
+            Message:"server error"
+        });
+    }
+
+})
 
 
 
