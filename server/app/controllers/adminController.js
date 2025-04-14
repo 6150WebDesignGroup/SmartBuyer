@@ -148,4 +148,86 @@ exports.deleteProduct = async (req, res) => {
 
 
 
-////////////////////////////////
+//////////////////////////////// pageSettings/////////////////////////////
+const PageSetup = require("../model/PageSetup");
+
+exports.uploadBackgroundImg = async (req, res) => {
+    try {
+        let pageImg = await PageSetup.findOne();
+        if (!pageImg) {
+            pageImg = new PageSetup({
+                BackgroundImg: "",
+                Title: "",
+                Description: "",
+                CarouselImg: [],
+                lastUpdated: new Date()
+            });
+        }
+        const filePath = "imgs/" + req.file.filename;
+        pageImg.BackgroundImg = filePath;
+        pageImg.lastUpdated = new Date();
+        await pageImg.save();
+
+        return res.status(200).json({
+            message: "Background image uploaded successfully",
+            imagePath: filePath
+        });
+    } catch (err) {
+        if (err.message.includes("Only JPEG/PNG/GIF")) {
+            return res.status(400).json({ error: err.message });
+        }
+        return res.status(500).json({ message: "Server error" });
+    }
+};
+
+exports.uploadCarouseImg = async (req, res) => {
+    try {
+        let pageImg = await PageSetup.findOne();
+        if (!pageImg) {
+            pageImg = new PageSetup({
+                BackgroundImg: "",
+                Title: "",
+                Description: "",
+                CarouselImg: [],
+                lastUpdated: new Date()
+            });
+        }
+        const filePath = "imgs/" + req.file.filename;
+        pageImg.CarouselImg.push(filePath);
+        pageImg.lastUpdated = new Date();
+        await pageImg.save();
+
+        return res.status(200).json({
+            message: "Carousel image uploaded successfully",
+            imagePath: filePath,
+            CarouselImg: pageImg.CarouselImg
+        });
+    } catch (err) {
+        if (err.message.includes("Only JPEG/PNG/GIF")) {
+            return res.status(400).json({ error: err.message });
+        }
+        return res.status(500).json({ message: "Server error" });
+    }
+};
+
+exports.deleteCarouseImg = async (req, res) => {
+    try {
+        const { deletImg } = req.body;
+        if (!deletImg) return res.status(400).json({ error: "Image path required" });
+
+        const pageImg = await PageSetup.findOne();
+        if (!pageImg) return res.status(404).json({ error: "Page data not found" });
+
+        pageImg.CarouselImg = pageImg.CarouselImg.filter(path => path !== deletImg);
+        pageImg.lastUpdated = new Date();
+        await pageImg.save();
+
+        return res.status(200).json({
+            message: "Carousel image deleted successfully",
+            CarouselImg: pageImg.CarouselImg
+        });
+    } catch (err) {
+        return res.status(500).json({ message: "Server error" });
+    }
+};
+
