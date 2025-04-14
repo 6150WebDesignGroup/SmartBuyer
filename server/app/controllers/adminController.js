@@ -81,8 +81,8 @@ exports.getProductsByCategory = async (req, res) => {
 
 exports.addProduct = async (req, res) => {
     try {
-        const { name, categoryName, desc, price, ProductNumber } = req.body;
-        if (!name || !categoryName || !desc || !price || !ProductNumber) {
+        const { name, categoryName, cardDesc,pageDesc, price, ProductNumber } = req.body;
+        if (!name || !categoryName || !cardDesc || !price || !ProductNumber) {
             return res.status(400).json({ error: "Missing required fields" });
         }
 
@@ -92,7 +92,7 @@ exports.addProduct = async (req, res) => {
 
         const images = req.files.map(file => "imgs/Product/" + file.filename);
         const product = new Product({
-            name, categoryName, desc, price, ProductNumber,
+            name, categoryName, cardDesc,pageDesc, price, ProductNumber,
             ProductImages: images
         });
 

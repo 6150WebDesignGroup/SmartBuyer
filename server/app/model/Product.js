@@ -10,7 +10,6 @@ const Product = new mongoose.Schema({
     ProductQuantity:{type:String,required:true},
     // using array to store multi files
     ProductImages: [{ type: String, required: true }],
-
     // 一个展示，一个查询
     ProductDeliveryTime:{type:String,required:true},
     deliveryTime:{type: Number}
