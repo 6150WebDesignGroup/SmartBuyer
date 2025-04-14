@@ -7,6 +7,7 @@ const HomePage = () => {
     const [sortType, setSortType] = useState('');
 
     useEffect(() => {
+        // getALL
         axios.get('/api/products')
             .then(res => {
                 const mapped = res.data.map(p => ({

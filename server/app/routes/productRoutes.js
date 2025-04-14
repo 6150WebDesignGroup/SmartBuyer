@@ -15,4 +15,10 @@ router.post("/add", upload.array("imgFile", 5), adminController.addProduct);
 router.put("/edit", upload.array("imgFile", 5), adminController.editProduct);
 router.delete("/delete", adminController.deleteProduct);
 
+// sort todo
+// search Name desc
+
+//
+
+
 module.exports = router;

@@ -7,6 +7,7 @@ const User = new mongoose.Schema({
     phone:{type:String,unique:true},
     pwd:{type:String,required:true},
     role:{type:String,default:null},
+    //userAddress
 })
 // this will add Id and growth it auto
 User.plugin(AutoIncrement, { inc_field: "UserId" });
