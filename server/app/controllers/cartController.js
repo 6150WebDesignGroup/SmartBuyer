@@ -1,5 +1,5 @@
 const Cart = require('../model/Cart');
-const Product = require('../model/Product'); // ⬅️ 确保路径正确
+const Product = require('../model/Product'); //
 
 // 获取用户购物车
 const getCartByUserId = async (req, res) => {

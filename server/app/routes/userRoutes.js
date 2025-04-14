@@ -17,3 +17,6 @@ router.post("/payment/add", payMethodController.addPaymentMethod);
 router.post("/payment/delete", payMethodController.deletePaymentMethod);
 
 router.post("/payment/edit", payMethodController.editPaymentMethod);
+
+///
+

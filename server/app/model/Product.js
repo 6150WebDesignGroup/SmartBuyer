@@ -4,7 +4,8 @@ const AutoIncrement = require("mongoose-sequence")(mongoose);
 const Product = new mongoose.Schema({
     name:{type:String,required:true},
     categoryName:{type:String,required:true},
-    desc:{type:String,required:true},
+    cardDesc:{type:String,required:true},
+    pageDesc:{type:String,required:true},
     price:{type:Number,required:true},
     ProductQuantity:{type:String,required:true},
     // using array to store multi files
