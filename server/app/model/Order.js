@@ -6,11 +6,7 @@ const OrderItemSchema = new mongoose.Schema({
 });
 
 const OrderSchema = new mongoose.Schema({
-<<<<<<< HEAD
-    status: { type: String, required: true }, // paid, refunding, refunded, refused
-    productList: [OrderItemSchema],
-    createdAt: { type: Date, default: Date.now }
-=======
+
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -49,7 +45,7 @@ const OrderSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   }
->>>>>>> 6f07c996f43dbbff0e6f63d1291e2fd843f53010
+
 });
 
 module.exports = mongoose.model("Order", OrderSchema);
