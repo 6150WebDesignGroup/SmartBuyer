@@ -2,8 +2,8 @@ const express = require("express");
 const app = express();
 const port =  3000;
 const mongoose = require("mongoose");
-const swaggerUi = require("swagger-ui-express");
-const swaggerJsdoc = require("swagger-jsdoc");
+// const swaggerUi = require("swagger-ui-express");
+// const swaggerJsdoc = require("swagger-jsdoc");
 const orderRoutes = require('./app/routes/orderRoutes');
 const bodyParser =  require('body-parser');
 const cors = require("cors");
@@ -11,9 +11,9 @@ const cors = require("cors");
 
 const MongoUrl = 'mongodb://localhost:27017/smartbuyer';
 // const MongoPort = 5000;
-mongoose.connect(MongoUrl,{useNewUrlParser:true,useUnifiedTopology: true})
-    .then(() => console.log("MongoDB Connected"))
-    .catch(err => console.log(err));
+mongoose.connect(MongoUrl)
+  .then(() => console.log("MongoDB Connected"))
+  .catch(err => console.log(err));
 
 app.use(cors());
 app.use(express.json());
@@ -34,24 +34,9 @@ app.get("/", (req, res) => {
 
 
 // swagger config  ps: from swagger doc
-const swaggerOptions = {
-    swaggerDefinition: {
-        openapi: "3.0.0",
-        info: {
-            title: "Assignment8",
-            version: "1.0.0",
-            description: "RESTful API for managing users",
-        },
-        servers: [
-            {
-                url: "http://localhost:3000", // 你的后端地址
-            },
-        ],
-    },
-    apis: ["./app/routes/*.js"], // ⭐ 写你路由文件的路径
-};
 
-const swaggerDocs = swaggerJsdoc(swaggerOptions);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
+// onst swaggerDocs = swaggerJsdoc(swaggerOptions);
+// app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.use('/api/orders', orderRoutes);
