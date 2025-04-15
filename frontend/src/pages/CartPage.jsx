@@ -63,31 +63,7 @@ const CartPage = () => {
     return (
         <div className="container my-5">
             {/* 导航栏（保持之前的） */}
-            <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-4 mb-4">
-                <Link className="navbar-brand fs-4 fw-bold" to="/">🛒 SmartBuyer</Link>
-                <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-                    <span className="navbar-toggler-icon"></span>
-                </button>
-
-                <div className="collapse navbar-collapse justify-content-between" id="navbarContent">
-                    <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li className="nav-item"><Link className="nav-link" to="/">🏠 Home</Link></li>
-                        <li className="nav-item"><Link className="nav-link" to="/search">🔍 Search</Link></li>
-                        <li className="nav-item dropdown">
-                            <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">📂 Categories</a>
-                            <ul className="dropdown-menu">
-                                <li><Link className="dropdown-item" to="/category/clothing">Clothing</Link></li>
-                                <li><Link className="dropdown-item" to="/category/electronics">Electronics</Link></li>
-                                <li><Link className="dropdown-item" to="/category/books">Books</Link></li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <form className="d-flex" onSubmit={(e) => e.preventDefault()}>
-                        <input className="form-control me-2" type="search" placeholder="Search" />
-                        <Link to="/search" className="btn btn-outline-light">Go</Link>
-                    </form>
-                </div>
-            </nav>
+            
 
             {/* 主体内容 */}
             {loading ? (
