@@ -21,10 +21,10 @@ exports.deleteCategory = async (req, res) => {
         const { id } = req.body;
         if (!id) return res.status(400).json({ error: "Missing category ID" });
 
-        const category = await ProductCategory.findOne({ Id: id });
+        const category = await ProductCategory.findOne({ProductCateId: id });
         if (!category) return res.status(404).json({ error: "Category not found" });
 
-        await ProductCategory.deleteOne({ Id: id });
+        await ProductCategory.deleteOne({ ProductCateId: id });
         await Product.deleteMany({ categoryName: category.name });
 
         res.status(200).json({ message: "Category and products deleted" });
@@ -36,7 +36,7 @@ exports.deleteCategory = async (req, res) => {
 
 exports.editCategory = async (req, res) => {
     try {
-        const category = await ProductCategory.findOne({ Id: req.body.id });
+        const category = await ProductCategory.findOne({ ProductCateId: req.body.id });
         if (!category) return res.status(404).json({ message: "Category not found" });
 
         category.name = req.body.name || category.name;
@@ -81,8 +81,9 @@ exports.getProductsByCategory = async (req, res) => {
 
 exports.addProduct = async (req, res) => {
     try {
-        const { name, categoryName, cardDesc,pageDesc, price, ProductNumber } = req.body;
-        if (!name || !categoryName || !cardDesc || !price || !ProductNumber) {
+        const { name, categoryId, cardDesc, pageDesc, price, ProductNumber } = req.body;
+
+        if (!name || !categoryId || !cardDesc || !price || !ProductNumber) {
             return res.status(400).json({ error: "Missing required fields" });
         }
 
@@ -90,19 +91,34 @@ exports.addProduct = async (req, res) => {
             return res.status(400).json({ error: "At least one image is required" });
         }
 
+        // 用 categoryId 查找分类
+        const category = await ProductCategory.findOne({ ProductCateId: categoryId });
+        if (!category) {
+            return res.status(404).json({ error: "Category not found" });
+        }
+
         const images = req.files.map(file => "imgs/Product/" + file.filename);
+
         const product = new Product({
-            name, categoryName, cardDesc,pageDesc, price, ProductNumber,
+            name,
+            categoryId: category.ProductCateId,        // 存 ID
+            categoryName: category.name,               // 可选：保留 name 用于展示
+            cardDesc,
+            pageDesc,
+            price,
+            ProductNumber,
             ProductImages: images
         });
 
         await product.save();
+
         res.status(200).json({ message: "Product created", product });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Server error" });
     }
 };
+
 
 exports.editProduct = async (req, res) => {
     try {

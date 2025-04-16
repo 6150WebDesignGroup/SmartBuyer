@@ -5,18 +5,19 @@ const paymentController = require("../controllers/paymentController");
 
 router.post('/RegUser', userController.registerUser);
 router.post('/Login', userController.loginUser);
-router.post('/logout', userController.logoutUser);
+router.post('/Logout', userController.logoutUser);
 router.post('/editUser', userController.editUser);
 
 // add paymentMethod
 
-
 module.exports = router;
-router.post("/payment/add", payMethodController.addPaymentMethod);
+router.post("/payment/add", paymentController.addPaymentMethod);
 
-router.post("/payment/delete", payMethodController.deletePaymentMethod);
+router.post("/payment/delete", paymentController.deletePaymentMethod);
 
-router.post("/payment/edit", payMethodController.editPaymentMethod);
+router.post("/payment/edit", paymentController.editPaymentMethod);
+
+router.post("/payment/getByUserEmail",paymentController.getpaymentMethod);
 
 ///
 

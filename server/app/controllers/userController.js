@@ -7,21 +7,27 @@ const EmailReg  = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const pwdReg = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
 
 exports.registerUser = async (req, res) => {
+    const { name, email, pwd, role, phone } = req.body;
     try {
-        const { name, email, pwd, role, phone } = req.body;
+
         if (role !== "Admin" && role !== "User") {
             return res.status(401).send({ error: "Invalid Role" });
         }
         if (!name.match(NameReg) || !email.match(EmailReg) || !pwd.match(pwdReg)) {
-            return res.status(400).json({ error: "Validation failed." });
+            console.log("Validate:", name, name.match(NameReg), email.match(EmailReg), pwd.match(pwdReg));
+            return res.status(400).json({ error: "Validation failed.",name:name.match(NameReg), email:email.match(EmailReg), pwd:pwd.match(pwdReg) });
         }
+        const user1 = await User.findOne({email: email});
+        if(user1!=null){
+            return res.status(402).json({ error: "email already exists" });
 
-        const Newpwd = await bcrypt.hash(pwd, 10);
-        const user = new User({ name, email, role, phone, pwd: Newpwd });
+        }
+        const NewPwd = await bcrypt.hash(pwd, 10);
+        const user = new User({ name, email, role, phone, pwd: NewPwd });
         await user.save();
-        res.status(200).json({ Message: "User create successfully." });
+        res.status(200).json({ Message: "User create successfully.", user: user });
     } catch (err) {
-        res.status(400).json({ error: "Validation failed." });
+        res.status(405).json({ error: "Validation failed.",name:name.match(NameReg), email:email.match(EmailReg), pwd:pwd.match(pwdReg), message:err.message });
     }
 };
 
