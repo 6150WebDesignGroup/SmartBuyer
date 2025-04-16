@@ -60,6 +60,7 @@ app.use("/api/user", require("./app/routes/userRoutes"));
 app.use("/admin",require("./app/routes/adminRoutes"));
 app.use('/api/cart', require('./app/routes/cartRoutes'));
 app.use('/product', require('./app/routes/productRoutes'));
+app.use('/order', require('./app/routes/orderRoutes'));
 
 
 app.use("/imgs",express.static("imgs"));
