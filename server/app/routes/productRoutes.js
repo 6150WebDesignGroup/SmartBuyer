@@ -15,6 +15,7 @@ router.post("/byCategory", adminController.getProductsByCategory);
 router.post("/add", upload.array("imgFile", 5), adminController.addProduct);
 router.put("/edit", upload.array("imgFile", 5), adminController.editProduct);
 router.delete("/delete", adminController.deleteProduct);
+router.get('/products/:id', productController.getProductById);
 
 // sort todo
 // search Name desc

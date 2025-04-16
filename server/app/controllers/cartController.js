@@ -106,6 +106,23 @@ const addItemToCart = async (req, res) => {
     }
 };
 
+// 清空用户购物车
+exports.clearCart = async (req, res) => {
+    const { userId } = req.params;
+    try {
+        const cart = await Cart.findOne({ userId });
+        if (!cart) return res.status(404).json({ error: '购物车不存在' });
+
+        cart.items = []; // 清空商品
+        await cart.save();
+
+        res.json({ message: '购物车已清空' });
+    } catch (err) {
+        res.status(500).json({ error: '清空购物车失败', details: err });
+    }
+};
+
+
 module.exports = {
     getCartByUserId,
     updateCartItemQuantity,
