@@ -1,4 +1,9 @@
 const Order = require("../model/Order");
+// strip keys
+const STRIPE_SECRET_KEY = "sk_test_51REcNIFblJprPmj7L4Bu1cxr0Ux6r91VUejkYtoaDVvb0hqoEDeloSfy3YBhg0IglysSwdAvP0yEaIVGCZbCOsm300QaQOlgPH";
+const STRIPE_PUBLIC_KEY = "pk_test_51REcNIFblJprPmj7UnbdGFbeMVzTBqGkOwZHkpeU1i0J2r5piszVO2gR13qwwgzqAg3X9mtciaEaRsvnqNij8pqx002WTGQ0wR";
+// add strip as test payment
+const Stripe = require('stripe');
 
 // 创建订单
 exports.createOrder = async (req, res) => {
