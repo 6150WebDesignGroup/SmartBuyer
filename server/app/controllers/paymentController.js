@@ -82,3 +82,27 @@ exports.editPaymentMethod = async (req, res) => {
         res.status(500).json({ error: "Server error" });
     }
 };
+
+
+exports.getpaymentMethod = async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            return res.status(400).json({ error: "Email is required" });
+        }
+
+        const userPayment = await PayMethod.findOne({ userEmail: email });
+
+        if (!userPayment) {
+            return res.status(404).json({ error: "No payment methods found for this email" });
+        }
+
+        return res.status(200).json({
+            message: "Payment methods fetched successfully",
+            paymentMethods: userPayment.paymentMethods,
+        });
+    } catch (err) {
+        console.error("Error fetching payment methods:", err);
+        return res.status(500).json({ error: "Server error" });
+    }
+};

@@ -6,7 +6,7 @@ const productController = require('../controllers/productController');
 
 // Category Routes
 router.post("/createCate", upload.single("imgFile"), adminController.createCategory);
-router.post("/delete", upload.none(), adminController.deleteCategory);
+router.post("/deleteCate", upload.none(), adminController.deleteCategory);
 router.post("/editCategory", adminController.editCategory);
 router.get("/getAllCategory", adminController.getAllCategories);
 
@@ -21,7 +21,6 @@ router.delete("/delete", adminController.deleteProduct);
 router.post('/searchProduct',productController.searchProduct);
 // 输入 name , price ,time 表示通过不同的需求排序
 router.post("/getAll",productController.getAllByCategory);
-
 
 
 module.exports = router;

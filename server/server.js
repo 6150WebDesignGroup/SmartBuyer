@@ -2,11 +2,21 @@ const express = require("express");
 const app = express();
 const port =  3000;
 const mongoose = require("mongoose");
+const session = require("express-session");
 // const swaggerUi = require("swagger-ui-express");
 // const swaggerJsdoc = require("swagger-jsdoc");
 const orderRoutes = require('./app/routes/orderRoutes');
 const bodyParser =  require('body-parser');
 const cors = require("cors");
+
+// session settings
+app.use(session({
+    secret: 'smartbuyer-secret-key',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false }  // 若启用 https 可设为 true
+}));
+
 
 
 const MongoUrl = 'mongodb://localhost:27017/smartbuyer';
@@ -21,7 +31,7 @@ app.use(express.json());
 app.use("/user",require("./app/routes/userRoutes"));
 app.use("/admin",require("./app/routes/adminRoutes"));
 app.use('/api/cart', require('./app/routes/cartRoutes'));
-
+app.use('/product', require('./app/routes/productRoutes'));
 
 
 app.use("/imgs",express.static("imgs"));
@@ -37,6 +47,8 @@ app.get("/", (req, res) => {
 
 
 // onst swaggerDocs = swaggerJsdoc(swaggerOptions);
-// app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.use('/api/orders', orderRoutes);
+app.listen(port, () => {
+    console.log(`Express app listening on port ${port}`);
+});
