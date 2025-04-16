@@ -1,4 +1,5 @@
 const express = require('express');
+
 const router = express.Router();
 const {
     getCartByUserId,
@@ -19,7 +20,7 @@ router.put('/:userId', updateCartItemQuantity);
 // DELETE /api/cart/:userId/:productId
 router.delete('/:userId/:productId', deleteCartItem);
 
-router.delete('/clear/:userId', cartController.clearCart);
+// router.delete('/clear/:userId', cartController.clearCart);
 
 module.exports = router;
 

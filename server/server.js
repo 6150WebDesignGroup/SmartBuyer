@@ -8,7 +8,7 @@ const session = require("express-session");
 const orderRoutes = require('./app/routes/orderRoutes');
 const bodyParser =  require('body-parser');
 const cors = require("cors");
-const session = require('express-session');
+// const session = require('express-session');
 
 // session settings
 app.use(session({
@@ -27,6 +27,15 @@ mongoose.connect(MongoUrl)
   .catch(err => console.log(err));
 
   // Session 配置 - 必须在 cors 和路由之前
+
+
+  // app.use(session({
+  //   secret: 'your_secret_key',
+  //   resave: false,
+  //   saveUninitialized: true,
+  //   cookie: { secure: false } // 在开发环境中设为false
+  // }));
+
 app.use(session({
   secret: 'your_secret_key', // 用于签名会话 ID cookie 的密钥
   resave: false,             // 即使会话没有被修改也不强制保存
@@ -71,10 +80,5 @@ app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
 
-app.use(session({
-  secret: 'your_secret_key',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false } // 在开发环境中设为false
-}));
+
 
