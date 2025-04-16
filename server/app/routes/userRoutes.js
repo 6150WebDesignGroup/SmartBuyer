@@ -10,7 +10,7 @@ router.post('/editUser', userController.editUser);
 
 // add paymentMethod
 
-module.exports = router;
+
 router.post("/payment/add", paymentController.addPaymentMethod);
 
 router.post("/payment/delete", paymentController.deletePaymentMethod);
@@ -21,3 +21,4 @@ router.post("/payment/getByUserEmail",paymentController.getpaymentMethod);
 
 ///
 
+module.exports = router;

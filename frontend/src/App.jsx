@@ -30,18 +30,18 @@ const App = () => {
       setCurrentUser(user);
       setLoading(false);
     };
-    
+
     // 初始化时检查
     checkUserStatus();
-    
+
     // 添加事件监听器处理存储变化
     const handleStorageChange = () => {
       checkUserStatus();
     };
-    
+
     window.addEventListener('storage', handleStorageChange);
     window.addEventListener('auth:statusChange', handleStorageChange);
-    
+
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('auth:statusChange', handleStorageChange);
@@ -53,7 +53,7 @@ const App = () => {
     try {
       await logoutUser();
       setCurrentUser(null);
-      
+
       setTimeout(() => {
         window.location.href = '/';
       }, 300);
@@ -112,11 +112,7 @@ const App = () => {
                     Hello, {currentUser.name} / Account
                   </span>
                   <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
-                    <li><Link className="dropdown-item" to="/profile">Profile</Link></li>
-                    {currentUser.role === 'Admin' && (
-                      <li><Link className="dropdown-item" to="/admin/products">Admin Dashboard</Link></li>
-                    )}
-                    <li><hr className="dropdown-divider" /></li>
+                    {/* 只保留Logout选项 */}
                     <li>
                       <button className="dropdown-item" onClick={handleLogout}>Logout</button>
                     </li>
@@ -161,7 +157,7 @@ const App = () => {
           <Route path="/category/:categoryName" element={<CategoryPage />} />
           <Route path="/search" element={<SearchPage />} />
           <Route path="/product/:productId" element={<ProductDetailPage />} />
-          
+
           {/* 认证页面 */}
           <Route path="/login" element={
             <AuthLayout>
@@ -173,13 +169,13 @@ const App = () => {
               <RegisterPage />
             </AuthLayout>
           } />
-          
+
           {/* 需要登录的页面 */}
           <Route path="/cart" element={<CartPage />} />
           <Route path="/orders" element={<OrderPage />} />
           <Route path="/refunds" element={<RefundPage />} />
           <Route path="/profile" element={<UserProfile />} />
-          
+
           {/* 管理员页面 */}
           <Route path="/admin/products" element={<ProductManagementPage />} />
         </Routes>
