@@ -11,7 +11,7 @@ router.post("/editCategory", adminController.editCategory);
 router.get("/getAllCategory", adminController.getAllCategories);
 
 // Product Routes
-router.get("/byCategory", adminController.getProductsByCategory);
+router.post("/byCategory", adminController.getProductsByCategory);
 router.post("/add", upload.array("imgFile", 5), adminController.addProduct);
 router.put("/edit", upload.array("imgFile", 5), adminController.editProduct);
 router.delete("/delete", adminController.deleteProduct);
@@ -20,7 +20,7 @@ router.delete("/delete", adminController.deleteProduct);
 // search Name desc
 router.post('/searchProduct',productController.searchProduct);
 // 输入 name , price ,time 表示通过不同的需求排序
-router.post("/getAll",productController.getAllByCategory);
+router.post("/getAllAndSortByCate",productController.getAllByCategory);
 
 
 module.exports = router;

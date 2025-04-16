@@ -57,11 +57,15 @@ exports.getAllCategories = async (req, res) => {
 
 exports.getProductsByCategory = async (req, res) => {
     try {
-        const { categoryName, page = 1 } = req.query;
-        if (!categoryName) return res.status(400).json({ error: "categoryName is required" });
+        const { categoryId, page = 1 } = req.body;
 
-        const pageSize = 4;
-        const query = { categoryName };
+        if (!categoryId) {
+            return res.status(400).json({ error: "categoryId is required" });
+        }
+
+        const pageSize = 6;
+        const query = { categoryId: Number(categoryId) };  // 确保类型一致
+
         const total = await Product.countDocuments(query);
         const products = await Product.find(query)
             .skip((page - 1) * pageSize)
@@ -74,10 +78,11 @@ exports.getProductsByCategory = async (req, res) => {
             products
         });
     } catch (err) {
-        console.error(err);
+        console.error("getProductsByCategory error:", err);
         res.status(500).json({ error: "Internal server error" });
     }
 };
+
 
 exports.addProduct = async (req, res) => {
     try {
@@ -125,42 +130,53 @@ exports.editProduct = async (req, res) => {
         const { id } = req.body;
         if (!id) return res.status(400).json({ error: "Product ID is required" });
 
-        const product = await Product.findOne({ Id: id });
+        const product = await Product.findOne({ ProductId: id });
         if (!product) return res.status(404).json({ error: "Product not found" });
 
-        const fields = ["name", "categoryName", "desc", "price", "ProductNumber"];
+        // 可修改字段列表
+        const fields = ["name", "categoryId", "cardDesc", "pageDesc", "price", "ProductQuantity", "ProductDeliveryTime", "deliveryTime"];
+
         fields.forEach(field => {
-            if (req.body[field]) product[field] = req.body[field];
+            if (req.body[field] !== undefined) {
+                product[field] = req.body[field];
+            }
         });
 
+        // 如果有上传新图片，覆盖旧图
         if (req.files && req.files.length > 0) {
             product.ProductImages = req.files.map(file => "imgs/Product/" + file.filename);
+        }
+
+        // 可选：更新 categoryName 对应字段
+        if (req.body.categoryId) {
+            const category = await ProductCategory.findOne({ ProductCateId: req.body.categoryId });
+            if (category) product.categoryName = category.name;
         }
 
         await product.save();
         res.status(200).json({ message: "Product updated", product });
     } catch (err) {
-        console.error(err);
+        console.error("Edit error:", err);
         res.status(500).json({ error: "Server error" });
     }
 };
+
 
 exports.deleteProduct = async (req, res) => {
     try {
         const { id } = req.body;
         if (!id) return res.status(400).json({ error: "Product ID is required" });
 
-        const product = await Product.findOne({ Id: id });
+        const product = await Product.findOne({ ProductId: id });
         if (!product) return res.status(404).json({ error: "Product not found" });
 
-        await Product.deleteOne({ Id: id });
+        await Product.deleteOne({ ProductId: id });
         res.status(200).json({ message: "Product deleted successfully" });
     } catch (err) {
-        console.error(err);
+        console.error("Delete error:", err);
         res.status(500).json({ error: "Internal server error" });
     }
 };
-
 
 
 
