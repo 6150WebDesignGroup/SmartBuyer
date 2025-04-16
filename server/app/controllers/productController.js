@@ -4,7 +4,7 @@ const Product = require("../model/Product");
 // search by name desc
 exports.searchProduct = async (req, res) => {
     try {
-        const { keyword = '', page = 1, limit = 8 } = req.body;
+        const { keyword = '', page = 1, limit = 6 } = req.body;
 
         const searchRegex = new RegExp(keyword, 'i'); // 忽略大小写模糊匹配
         const filter = {
@@ -42,15 +42,19 @@ exports.searchProduct = async (req, res) => {
 exports.getAllByCategory = async (req, res) => {
     try {
         const {
-            categoryName,
+            categoryId,
             page = 1,
-            limit = 8,
+            limit = 6,
             sortBy = 'name' // 可为 name / price / time
         } = req.body;
 
-        if (!categoryName) {
-            return res.status(400).json({error: "categoryName is required."});
+        if (!categoryId) {
+            return res.status(400).json({ error: "categoryId is required." });
         }
+
+        const pageNum = Number(page);
+        const pageSize = Number(limit);
+        const skip = (pageNum - 1) * pageSize;
 
         // 构建排序规则
         let sortField = {};
@@ -65,24 +69,24 @@ exports.getAllByCategory = async (req, res) => {
                 sortField.name = 1;
         }
 
-        const skip = (page - 1) * limit;
+        const filter = { categoryId: Number(categoryId) };
 
-        const total = await Product.countDocuments({categoryName});
-        const productLists = await Product.find({categoryName})
+        const total = await Product.countDocuments(filter);
+        const productLists = await Product.find(filter)
             .skip(skip)
-            .limit(limit)
+            .limit(pageSize)
             .sort(sortField);
 
         return res.json({
             productLists,
             pagination: {
                 total,
-                page,
-                pages: Math.ceil(total / limit),
+                page: pageNum,
+                pages: Math.ceil(total / pageSize),
             },
         });
     } catch (err) {
         console.error('getAllByCategory error:', err);
-        return res.status(500).json({error: 'Server error'});
+        return res.status(500).json({ error: 'Server error' });
     }
 };
