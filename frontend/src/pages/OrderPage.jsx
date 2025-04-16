@@ -25,6 +25,14 @@ const OrderPage = () => {
     navigate(`/refund/${orderId}`);
   };
 
+  const getDaysRemaining = (deliveryDueDate) => {
+    const now = new Date();
+    const due = new Date(deliveryDueDate);
+    const diffTime = due.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+
   return (
     <div className="container mt-4">
       <h2>My Orders</h2>
@@ -34,6 +42,15 @@ const OrderPage = () => {
             <h5 className="card-title">Order ID: {order._id}</h5>
             <p className="card-text">Total Amount: ${order.totalAmount}</p>
             <p className="card-text">Status: {order.status}</p>
+
+            {order.isDelivered ? (
+              <p className="card-text text-success">Delivered</p>
+            ) : (
+              <p className="card-text text-secondary">
+                ⏳ {getDaysRemaining(order.deliveryDueDate)} day(s) remaining for delivery
+              </p>
+            )}
+
 
             {!order.isPaid && (
               <button className="btn btn-success me-2" onClick={() => handlePay(order._id)}>

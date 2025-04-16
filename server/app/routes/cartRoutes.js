@@ -1,4 +1,5 @@
 const express = require('express');
+
 const router = express.Router();
 const {
     getCartByUserId,
@@ -20,9 +21,13 @@ router.put('/:userId', updateCartItemQuantity);
 // DELETE /api/cart/:userId/:productId
 router.delete('/:userId/:productId', deleteCartItem);
 
+
 // 清空整个购物车
 // DELETE /api/cart/clear/:userId
 router.delete('/clear/:userId', clearCart);
+
+// router.delete('/clear/:userId', cartController.clearCart);
+
 
 module.exports = router;
 
