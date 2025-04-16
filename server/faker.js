@@ -8,6 +8,7 @@ const PayMethod = require("./app/model/PayMethod");
 const Order = require("./app/model/Order");
 const Delivery = require("./app/model/Delivery");
 const Cart = require("./app/model/Cart");
+const bcrypt = require("bcrypt");
 
 mongoose.connect("mongodb://127.0.0.1:27017/smartbuyer");
 
@@ -33,21 +34,23 @@ async function seed() {
     }
 
     // Users (1 admin + 5 users)
+    const pwd = await bcrypt.hash(faker.internet.password({ length: 10 }), 10);
     const users = [
         {
             name: "Admin User",
             email: "admin@example.com",
             phone: "10000000000",
-            pwd: faker.internet.password({ length: 10 }),
+            pwd: pwd,
             role: "Admin"
         }
     ];
     for (let i = 0; i < 5; i++) {
+        const pwd = await bcrypt.hash(faker.internet.password({ length: 10 }), 10);
         users.push({
             name: faker.person.fullName(),
             email: faker.internet.email(),
             phone: faker.phone.number("1##########"),
-            pwd: faker.internet.password({ length: 10 }),
+            pwd: pwd,
             role: "User"
         });
     }
