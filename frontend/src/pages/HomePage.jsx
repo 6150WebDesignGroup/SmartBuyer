@@ -1,10 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 const HomePage = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [sortType, setSortType] = useState('');
+
+    const handleAddToCart = (productId) => {
+        const userId = '123'; // ⚠️ 后期请替换
+        axios.post(`/api/cart/${userId}`, { productId })
+            .then(() => alert("✅ Added to cart!"))
+            .catch(err => console.error("Add to cart failed:", err));
+    };
+
 
     useEffect(() => {
         // getALL
@@ -89,8 +98,13 @@ const HomePage = () => {
                                     <p className="mb-3">Quantity: {product.quantity}</p>
 
                                     <div className="mt-auto d-flex flex-wrap gap-2">
-                                        <button className="btn btn-primary">Add to Cart</button>
-                                        <button className="btn btn-outline-secondary">Learn More</button>
+                                        <button className="btn btn-primary" onClick={() => handleAddToCart(product._id)}>
+                                            Add to Cart
+                                        </button>
+
+                                        <Link to={`/product/${product._id}`}>
+                                            <button className="btn btn-outline-secondary">Learn More</button>
+                                        </Link>
                                     </div>
                                 </div>
                             </div>

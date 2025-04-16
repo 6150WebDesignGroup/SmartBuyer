@@ -1,11 +1,42 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { createOrder } from '../services/orderService';
+import { useNavigate } from 'react-router-dom'; // 如果还没引入
 
 const CartPage = () => {
     const userId = '123'; // ⚠️ 实际项目中请替换为动态获取的当前用户 ID
     const [cartItems, setCartItems] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    const navigate = useNavigate();
+
+    const handlePlaceOrder = () => {
+        const userId = '123'; // ⚠️ 替换为真实用户 ID
+        const productList = cartItems.map(item => ({
+            product: item.productId,
+            quantity: item.quantity
+        }));
+        const totalAmount = cartItems.reduce(
+            (sum, item) => sum + item.price * item.quantity,
+            0
+        );
+
+        createOrder({ userId, productList, totalAmount })
+            .then(() => {
+                // 下单成功后清空购物车
+                return axios.delete(`/api/cart/clear/${userId}`);
+            })
+            .then(() => {
+                alert('✅ Order placed and cart cleared!');
+                navigate('/orders');
+            })
+            .catch(err => {
+                console.error('❌ Order process failed:', err);
+                alert('Order failed');
+            });
+
+    };
 
     // 载入购物车数据
     useEffect(() => {
@@ -113,7 +144,10 @@ const CartPage = () => {
                         <h5 className="me-1">Total: ${totalPrice.toFixed(2)}</h5>
                         <div className="d-flex flex-column flex-md-row gap-3 mt-2">
                             <Link to="/" className="btn btn-outline-primary">🛍️ Shop More</Link>
-                            <button className="btn btn-success">✅ Place Order</button>
+                            <button className="btn btn-success" onClick={handlePlaceOrder}>
+                                ✅ Place Order
+                            </button>
+
                         </div>
                     </div>
                 </>
