@@ -51,7 +51,11 @@ async function seed() {
             role: "User"
         });
     }
-    const insertedUsers = await User.insertMany(users);
+    const insertedUsers = [];
+    for (const u of users) {
+        const saved = await User.create(u);
+        insertedUsers.push(saved);
+    }
 
     // Products
     const products = [];
@@ -73,11 +77,11 @@ async function seed() {
     }
     const insertedProducts = await Product.insertMany(products);
 
-    // PayMethods (use insertedUsers[i]._id and insertedUsers[i].UserId)
+    // PayMethods (use insertedUsers[i].UserId)
     const payMethods = insertedUsers.map((user) => {
         return {
             userEmail: user.email,
-            userId: user.UserId ?? 1, // fallback for safety if auto-increment fails
+            userId: user.UserId, // use auto-increment field
             paymentMethods: [
                 {
                     _id: faker.string.uuid(),
@@ -92,7 +96,6 @@ async function seed() {
             ]
         };
     });
-    console.log("PayMethods preview:", payMethods); // Debug
     await PayMethod.insertMany(payMethods);
 
     // Orders
