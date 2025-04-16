@@ -1,5 +1,5 @@
 const Cart = require('../model/Cart');
-const Product = require('../model/Product'); //
+const Product = require('../model/Product');
 
 // 获取用户购物车
 const getCartByUserId = async (req, res) => {
@@ -58,17 +58,14 @@ const addItemToCart = async (req, res) => {
     const { productId } = req.body;
 
     try {
-        // 查找商品信息
         const product = await Product.findById(productId);
         if (!product) return res.status(404).json({ error: '商品不存在' });
 
         const price = product.price;
 
-        // 查找用户购物车
         let cart = await Cart.findOne({ userId });
 
         if (!cart) {
-            // 如果没有购物车，则新建一个
             cart = new Cart({
                 userId,
                 items: [{
@@ -79,16 +76,13 @@ const addItemToCart = async (req, res) => {
                 }]
             });
         } else {
-            // 检查商品是否已存在
             const existingItem = cart.items.find(item => item.productId.toString() === productId);
 
             if (existingItem) {
-                // 已存在：数量+1，总价更新
                 existingItem.quantity += 1;
                 existingItem.totalPrice = existingItem.price * existingItem.quantity;
                 existingItem.LastUpdate = Date.now();
             } else {
-                // 不存在：新建商品项
                 cart.items.push({
                     productId,
                     price,
@@ -106,8 +100,8 @@ const addItemToCart = async (req, res) => {
     }
 };
 
-// 清空用户购物车
-exports.clearCart = async (req, res) => {
+// ✅ 清空购物车函数（之前已写，但未导出）
+const clearCart = async (req, res) => {
     const { userId } = req.params;
     try {
         const cart = await Cart.findOne({ userId });
@@ -122,10 +116,11 @@ exports.clearCart = async (req, res) => {
     }
 };
 
-
+// ✅ 正确导出所有方法（包括 clearCart）
 module.exports = {
     getCartByUserId,
     updateCartItemQuantity,
     deleteCartItem,
-    addItemToCart
+    addItemToCart,
+    clearCart
 };
