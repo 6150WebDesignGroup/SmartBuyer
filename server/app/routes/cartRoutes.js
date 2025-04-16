@@ -4,7 +4,8 @@ const router = express.Router();
 const {
     getCartByUserId,
     updateCartItemQuantity,
-    deleteCartItem
+    deleteCartItem,
+    clearCart
 } = require('../controllers/cartController');
 
 // 获取指定用户的购物车内容
@@ -20,7 +21,14 @@ router.put('/:userId', updateCartItemQuantity);
 // DELETE /api/cart/:userId/:productId
 router.delete('/:userId/:productId', deleteCartItem);
 
+
+// 清空整个购物车
+// DELETE /api/cart/clear/:userId
+router.delete('/clear/:userId', clearCart);
+
 // router.delete('/clear/:userId', cartController.clearCart);
 
+
 module.exports = router;
+
 

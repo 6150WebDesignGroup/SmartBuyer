@@ -14,7 +14,6 @@ const OrderPage = () => {
         .catch(err => console.error('Failed to fetch orders', err));
     }
   }, [userId]);
-
   const handlePay = (orderId) => {
     payOrder(orderId)
       .then(() => window.location.reload())
