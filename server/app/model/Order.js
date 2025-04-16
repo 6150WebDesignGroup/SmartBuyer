@@ -41,6 +41,14 @@ const OrderSchema = new mongoose.Schema({
     required: true,
     default: 'pending' // paid、refunding、refunded
   },
+  deliveryDueDate: {
+    type: Date,
+    required: false
+  },
+  isDelivered: {
+    type: Boolean,
+    default: false
+  },
   createdAt: {
     type: Date,
     default: Date.now
