@@ -47,6 +47,40 @@ const HomePage = () => {
         }
     };
 
+    // add product to cart
+    const handelAddToCart = async (product) => {
+        const user = await JSON.parse(localStorage.getItem("user"));
+        console.log("LocalStorage user:", localStorage.getItem("user"));
+        if (!user || ! user.UserId) {
+            alert("Please log in to add items to your cart.");
+            return;
+        }
+
+        const payload = {
+            userId: user.UserId,
+            productId: product._id,
+            quantity: 1
+        };
+        try {
+            const res = await axios.post("http://localhost:5001/api/cart/addToCart", {
+                userId: user.UserId,
+                productId: product._id,
+                quantity: 1
+            });
+
+            if (res.status === 200) {
+                alert("Product added to cart!");
+            } else {
+                alert("Failed to add: " + res.data.error);
+            }
+        } catch (error) {
+            console.error("Axios error:", error);
+            alert("Error adding to cart.");
+        }
+
+    };
+
+
     useEffect(() => {
         fetchProducts();
     }, [sortType, page]);
@@ -90,7 +124,7 @@ const HomePage = () => {
                                     <p className="card-text">Price: ${product.price}</p>
                                     <p className="card-text">Delivery: {product.deliveryTime}</p>
                                     <p className="card-text">Qty: {product.quantity}</p>
-                                    <button className="btn btn-primary mt-auto" onClick={() => alert('Add to cart')}>
+                                    <button className="btn btn-primary mt-auto" onClick={() => handelAddToCart(product)}>
                                         Add to Cart
                                     </button>
                                 </div>

@@ -65,7 +65,7 @@ const LoginPage = () => {
       // 强制更新用户数据到localStorage
       if (response.user) {
         localStorage.setItem('user', JSON.stringify(response.user));
-        
+        console.log(JSON.stringify(response.user))
         // 添加一个小延迟，确保本地存储已更新
         setTimeout(() => {
           if (response.user.role === "Admin") {
