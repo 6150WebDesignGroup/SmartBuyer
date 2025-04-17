@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = '/api/user';
+const API_URL = 'http://localhost:5001/api/user';
 
 // 只添加了这个辅助函数，确保彻底清除所有状态
 const clearAuthStorage = () => {

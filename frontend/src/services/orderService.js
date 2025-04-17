@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API = 'http://localhost:3000/api/orders';
+
+const API = 'http://localhost:5001/api/orders';
+
 
 export const createOrder = (orderData) => axios.post(`${API}/create`, orderData);
 

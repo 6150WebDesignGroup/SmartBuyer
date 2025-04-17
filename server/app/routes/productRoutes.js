@@ -21,7 +21,7 @@ router.get('/products/:id', productController.getProductById);
 // search Name desc
 router.post('/searchProduct',productController.searchProduct);
 // 输入 name , price ,time 表示通过不同的需求排序
-router.post("/getAllAndSortByCate",productController.getAllByCategory);
+router.post("/getAllAndSort",productController.getAll);
 
-
+console.log('🔥 productRoute loaded');
 module.exports = router;

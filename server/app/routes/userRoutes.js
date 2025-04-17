@@ -19,6 +19,6 @@ router.post("/payment/edit", paymentController.editPaymentMethod);
 
 router.post("/payment/getByUserEmail",paymentController.getpaymentMethod);
 
-///
+//
 
 module.exports = router;
