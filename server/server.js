@@ -48,11 +48,10 @@ app.use(session({
 
 // 确保CORS配置正确
 app.use(cors({
-    origin: true, // reflect request origin automatically
+    origin: 'http://localhost:3000', // 明确指定前端 origin，避免潜在 CSRF 风险
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
 
 app.use(express.json());
 // set Routes
@@ -81,5 +80,11 @@ app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
 
-
+app._router.stack
+    .filter(r => r.route)
+    .forEach(r => {
+        const methods = Object.keys(r.route.methods).join(',').toUpperCase();
+        const path = r.route.path;
+        console.log(`[${methods}] ${path}`);
+    });
 
