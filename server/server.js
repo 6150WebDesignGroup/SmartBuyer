@@ -10,6 +10,10 @@ const bodyParser =  require('body-parser');
 const cors = require("cors");
 // const session = require('express-session');
 
+// using env files
+require('dotenv').config();
+
+
 // session settings
 app.use(session({
     secret: 'smartbuyer-secret-key',
@@ -28,13 +32,6 @@ mongoose.connect(MongoUrl)
 
   // Session 配置 - 必须在 cors 和路由之前
 
-
-  // app.use(session({
-  //   secret: 'your_secret_key',
-  //   resave: false,
-  //   saveUninitialized: true,
-  //   cookie: { secure: false } // 在开发环境中设为false
-  // }));
 
 app.use(session({
   secret: 'your_secret_key', // 用于签名会话 ID cookie 的密钥
@@ -60,6 +57,8 @@ app.use("/admin",require("./app/routes/adminRoutes"));
 app.use('/api/cart', require('./app/routes/cartRoutes'));
 app.use('/product', require('./app/routes/productRoutes'));
 app.use('/order', require('./app/routes/orderRoutes'));
+app.use("/payment/webhook", express.raw({ type: "application/json" }));
+app.use("/paymentTest", require("./app/routes/payment"));
 
 
 app.use("/imgs",express.static("imgs"));
