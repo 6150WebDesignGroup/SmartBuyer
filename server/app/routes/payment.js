@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-// const paymentController = require("../controllers/paymentController");
+const paymentController = require("../controllers/paymentController");
 //
 // // 使用Stripe 作为测试支付api 需要官网插件挂载转接？？
 // router.post("/create-payment-intent", paymentController.createPaymentIntent);

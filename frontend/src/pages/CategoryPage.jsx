@@ -63,7 +63,7 @@ const CategoryPage = () => {
               <div className="card h-100 shadow-sm">
                 {product.ProductImages?.[0] && (
                   <img
-                    src={product.ProductImages[0]}
+                    src={`http://localhost:5001/${product.ProductImages[0]}`}
                     className="card-img-top"
                     alt={product.name}
                     style={{ maxHeight: '200px', objectFit: 'cover' }}
