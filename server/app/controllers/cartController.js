@@ -52,55 +52,65 @@ const deleteCartItem = async (req, res) => {
     }
 };
 
-// 添加商品到购物车
-const addItemToCart = async (req, res) => {
-    const { userId } = req.params;
-    const { productId } = req.body;
 
+// addToCart
+const addToCart = async (req, res) => {
     try {
+        const { UserId, productId, quantity=1 } = req.body;
+
+        // 1. 获取商品详情
         const product = await Product.findById(productId);
-        if (!product) return res.status(404).json({ error: '商品不存在' });
+        if (!product) return res.status(404).json({ error: "Product not found" });
 
         const price = product.price;
+        const totalPrice = price * quantity;
 
-        let cart = await Cart.findOne({ userId });
+        // 2. 查询用户购物车
+        let cart = await Cart.findOne({ UserId });
 
         if (!cart) {
+            // 3. 如果购物车不存在，创建新购物车
             cart = new Cart({
-                userId,
+                UserId,
                 items: [{
                     productId,
+                    quantity,
                     price,
-                    quantity: 1,
-                    totalPrice: price
-                }]
+                    totalPrice,
+                }],
+                LastUpdate: new Date()
             });
         } else {
-            const existingItem = cart.items.find(item => item.productId.toString() === productId);
-
+            // 4. 检查商品是否已在购物车中
+            const existingItem = cart.items.find(item => item.productId.equals(productId));
             if (existingItem) {
-                existingItem.quantity += 1;
-                existingItem.totalPrice = existingItem.price * existingItem.quantity;
-                existingItem.LastUpdate = Date.now();
+                // 如果存在，更新数量和总价
+                existingItem.quantity += quantity;
+                existingItem.totalPrice = existingItem.quantity * price;
+                existingItem.LastUpdate = new Date();
             } else {
+                // 否则添加新商品
                 cart.items.push({
                     productId,
+                    quantity,
                     price,
-                    quantity: 1,
-                    totalPrice: price
+                    totalPrice,
                 });
             }
+
+            cart.LastUpdate = new Date();
         }
 
         await cart.save();
-        res.json({ message: '商品已加入购物车' });
+        return res.status(200).json({ message: "Item added to cart", cart });
+
     } catch (err) {
-        console.error('加入购物车失败:', err);
-        res.status(500).json({ error: '服务器错误：无法加入购物车' });
+        console.error("Add to cart error:", err);
+        return res.status(500).json({ error: "Server error" });
     }
 };
 
-// ✅ 清空购物车函数（之前已写，但未导出）
+
 const clearCart = async (req, res) => {
     const { userId } = req.params;
     try {
@@ -116,11 +126,12 @@ const clearCart = async (req, res) => {
     }
 };
 
-// ✅ 正确导出所有方法（包括 clearCart）
+
 module.exports = {
     getCartByUserId,
     updateCartItemQuantity,
     deleteCartItem,
-    addItemToCart,
-    clearCart
+    //addItemToCart,
+    clearCart,
+    addToCart,
 };

@@ -1,11 +1,12 @@
 const express = require('express');
-
+// const cartController = require("../controllers/cartController");
 const router = express.Router();
 const {
     getCartByUserId,
     updateCartItemQuantity,
     deleteCartItem,
-    clearCart
+    clearCart,
+    addToCart
 } = require('../controllers/cartController');
 
 // 获取指定用户的购物车内容
@@ -26,8 +27,10 @@ router.delete('/:userId/:productId', deleteCartItem);
 // DELETE /api/cart/clear/:userId
 router.delete('/clear/:userId', clearCart);
 
-// router.delete('/clear/:userId', cartController.clearCart);
+// yige 向某个用户的的购物车中添加商品
+router.post("/addToCart", addToCart);
 
+// router.delete('/clear/:userId', cartController.clearCart);
 
 module.exports = router;
 
