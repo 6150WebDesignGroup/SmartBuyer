@@ -89,10 +89,6 @@ const LoginPage = () => {
   return (
     <div className="auth-container">
       <div className="auth-form-container">
-        <div className="auth-logo">
-          <img src="/logo.png" alt="SmartBuyer" />
-        </div>
-        
         <h1>Sign in</h1>
         
         {serverError && (
