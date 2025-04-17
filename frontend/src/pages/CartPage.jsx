@@ -5,14 +5,14 @@ import { createOrder } from '../services/orderService';
 import { useNavigate } from 'react-router-dom'; // 如果还没引入
 
 const CartPage = () => {
-    const userId = '123'; // ⚠️ 实际项目中请替换为动态获取的当前用户 ID
+    const userId = '123';
     const [cartItems, setCartItems] = useState([]);
     const [loading, setLoading] = useState(true);
 
     const navigate = useNavigate();
 
     const handlePlaceOrder = () => {
-        const userId = '123'; // ⚠️ 替换为真实用户 ID
+        const userId = '123';
         const productList = cartItems.map(item => ({
             product: item.productId,
             quantity: item.quantity
@@ -28,11 +28,11 @@ const CartPage = () => {
                 return axios.delete(`/api/cart/clear/${userId}`);
             })
             .then(() => {
-                alert('✅ Order placed and cart cleared!');
+                alert('Order placed and cart cleared!');
                 navigate('/orders');
             })
             .catch(err => {
-                console.error('❌ Order process failed:', err);
+                console.error('Order process failed:', err);
                 alert('Order failed');
             });
 
@@ -94,8 +94,6 @@ const CartPage = () => {
     return (
         <div className="container my-5">
             {/* 导航栏（保持之前的） */}
-            
-
             {/* 主体内容 */}
             {loading ? (
                 <div className="text-center my-5">
@@ -121,7 +119,6 @@ const CartPage = () => {
                                     onClick={() => removeItem(item.productId)}
                                     style={{ transform: 'translate(50%, -50%)' }}
                                 >
-                                    🗑️
                                 </button>
                             </div>
 
@@ -143,9 +140,9 @@ const CartPage = () => {
                     <div className="d-flex flex-column align-items-end mt-4">
                         <h5 className="me-1">Total: ${totalPrice.toFixed(2)}</h5>
                         <div className="d-flex flex-column flex-md-row gap-3 mt-2">
-                            <Link to="/" className="btn btn-outline-primary">🛍️ Shop More</Link>
+                            <Link to="/" className="btn btn-outline-primary">Shop More</Link>
                             <button className="btn btn-success" onClick={handlePlaceOrder}>
-                                ✅ Place Order
+                                Place Order
                             </button>
 
                         </div>

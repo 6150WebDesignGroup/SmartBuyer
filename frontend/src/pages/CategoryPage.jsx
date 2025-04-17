@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
+
 
 // Mapping from category name (from URL) to categoryId (used in backend)
 const categoryNameToId = {
@@ -12,8 +14,9 @@ const categoryNameToId = {
 const PRODUCTS_PER_PAGE = 6;
 
 const CategoryPage = () => {
+  const [searchParams] = useSearchParams();
   const { category } = useParams(); // Gets 'books' from /category/books
-  const categoryId = categoryNameToId[category];
+  const categoryId = Number(searchParams.get("categoryId"));
   const [products, setProducts] = useState([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -24,12 +27,13 @@ const CategoryPage = () => {
         // ===== BACKEND API INTEGRATION POINT =====
         // API: POST /api/product/byCategory
         // Body: { categoryId, page }
-        const res = await axios.post('http://localhost:5001/api/product/byCategory', {
+        //categoryId =1;
+        const res = await axios.post('http://localhost:5001/product/byCategory', {
           categoryId,
           page,
         });
-        setProducts(res.data || []);
-        setHasMore((res.data || []).length === PRODUCTS_PER_PAGE);
+        setProducts(res.data.products || []);
+        setHasMore((res.data.products || []).length === PRODUCTS_PER_PAGE);
       } catch (err) {
         console.error('Error fetching category products:', err);
       }
@@ -55,7 +59,7 @@ const CategoryPage = () => {
           <p>No products found in this category.</p>
         ) : (
           products.map((product) => (
-            <div className="col-md-6 mb-4" key={product._id}>
+            <div className="col-md-4 mb-4" key={product._id}>
               <div className="card h-100 shadow-sm">
                 {product.ProductImages?.[0] && (
                   <img
