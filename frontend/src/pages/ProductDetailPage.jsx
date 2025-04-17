@@ -11,7 +11,7 @@ const ProductDetailPage = () => {
     const handleAddToCart = () => {
         const userId = '123'; // ⚠️ 后期请改为真实登录用户 ID
         axios.post(`/api/cart/${userId}`, { productId: product._id })
-            .then(() => alert('✅ Added to cart!'))
+            .then(() => alert('Added to cart!'))
             .catch(err => console.error("Add to cart failed:", err));
     };
 

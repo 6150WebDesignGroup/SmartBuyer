@@ -58,7 +58,7 @@ app.use('/api/cart', require('./app/routes/cartRoutes'));
 app.use('/product', require('./app/routes/productRoutes'));
 app.use('/order', require('./app/routes/orderRoutes'));
 app.use("/payment/webhook", express.raw({ type: "application/json" }));
-app.use("/paymentTest", require("./app/routes/payment"));
+// app.use("/paymentTest", require("./app/routes/payment"));
 
 
 app.use("/imgs",express.static("imgs"));
