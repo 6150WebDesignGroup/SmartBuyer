@@ -112,9 +112,9 @@ const addToCart = async (req, res) => {
 
 
 const clearCart = async (req, res) => {
-    const { userId } = req.params;
+    const { UserId } = req.params;
     try {
-        const cart = await Cart.findOne({ userId });
+        const cart = await Cart.findOne({ UserId });
         if (!cart) return res.status(404).json({ error: '购物车不存在' });
 
         cart.items = []; // 清空商品

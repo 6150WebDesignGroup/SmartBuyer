@@ -25,7 +25,7 @@ router.delete('/:userId/:productId', deleteCartItem);
 
 // 清空整个购物车
 // DELETE /api/cart/clear/:userId
-router.delete('/clear/:userId', clearCart);
+router.delete('/clear/:UserId', clearCart);
 
 // yige 向某个用户的的购物车中添加商品
 router.post("/addToCart", addToCart);

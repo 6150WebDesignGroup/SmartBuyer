@@ -90,9 +90,9 @@ const App = () => {
                   </span>
                   <ul className="dropdown-menu" aria-labelledby="categoryDropdown">
                     {/* TODO: Replace these with categories from backend */}
-                    <li><Link className="dropdown-item" to="/category/electronics">Electronics</Link></li>
-                    <li><Link className="dropdown-item" to="/category/clothing">Clothing</Link></li>
-                    <li><Link className="dropdown-item" to="/category/books">Books</Link></li>
+                    <li><Link className="dropdown-item" to="/category/books?categoryId=3">Books</Link></li>
+                    <li><Link className="dropdown-item" to="/category/clothing?categoryId=2">Clothing</Link></li>
+                    <li><Link className="dropdown-item" to="/category/electronics?categoryId=1">Electronics</Link></li>
                   </ul>
                 </li>
 
