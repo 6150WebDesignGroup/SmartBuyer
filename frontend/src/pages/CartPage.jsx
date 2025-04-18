@@ -1,159 +1,189 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Link } from 'react-router-dom';
-import { createOrder } from '../services/orderService';
-import { useNavigate } from 'react-router-dom'; // 如果还没引入
+import {
+  getCartByUserId,
+  updateCartItemQuantity,
+  deleteCartItem,
+  clearCart
+} from '../services/cartService';
+import { Link, useNavigate } from 'react-router-dom';
+import {
+  Container,
+  Row,
+  Col,
+  Image,
+  Button,
+  Spinner,
+  Alert
+} from 'react-bootstrap';
 
 const CartPage = () => {
-    const userId = '123'; // ⚠️ 实际项目中请替换为动态获取的当前用户 ID
-    const [cartItems, setCartItems] = useState([]);
-    const [loading, setLoading] = useState(true);
 
-    const navigate = useNavigate();
+  const userId = localStorage.getItem('userId');
+  const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-    const handlePlaceOrder = () => {
-        const userId = '123'; // ⚠️ 替换为真实用户 ID
-        const productList = cartItems.map(item => ({
-            product: item.productId,
-            quantity: item.quantity
-        }));
-        const totalAmount = cartItems.reduce(
-            (sum, item) => sum + item.price * item.quantity,
-            0
-        );
+  useEffect(() => {
+    async function fetchCart() {
+      try {
+        const res = await getCartByUserId(userId);
+        setCartItems(res.data || []);
+      } catch (err) {
+        console.error('Failed to fetch cart', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    if (userId) fetchCart();
+  }, [userId]);
 
-        createOrder({ userId, productList, totalAmount })
-            .then(() => {
-                // 下单成功后清空购物车
-                return axios.delete(`/api/cart/clear/${userId}`);
-            })
-            .then(() => {
-                alert('✅ Order placed and cart cleared!');
-                navigate('/orders');
-            })
-            .catch(err => {
-                console.error('❌ Order process failed:', err);
-                alert('Order failed');
-            });
+  const handleQuantityChange = async (productId, newQty) => {
+    if (newQty < 1) return;
+    try {
+      await updateCartItemQuantity(userId, productId, newQty);
+      setCartItems(items =>
+        items.map(i =>
+          i.productId._id === productId
+            ? { ...i, quantity: newQty, totalPrice: i.price * newQty }
+            : i
+        )
+      );
+    } catch (err) {
+      console.error('Error updating quantity', err);
+    }
+  };
 
-    };
+  const handleDelete = async productId => {
+    try {
+      await deleteCartItem(userId, productId);
+      setCartItems(items => items.filter(i => i.productId._id !== productId));
+    } catch (err) {
+      console.error('Error deleting item', err);
+    }
+  };
 
-    // 载入购物车数据
-    useEffect(() => {
-        axios.get(`/api/cart/${userId}`)
-            .then(res => {
-                setCartItems(res.data);
-                setLoading(false);
-            })
-            .catch(err => {
-                console.error("Error fetching cart:", err);
-                setLoading(false);
-            });
-    }, []);
+  const handleClear = async () => {
+    try {
+      await clearCart(userId);
+      setCartItems([]);
+    } catch (err) {
+      console.error('Error clearing cart', err);
+    }
+  };
 
-    // 修改数量
-    const updateQuantity = (productId, delta) => {
-        const item = cartItems.find(i => i.productId === productId);
-        if (!item) return;
+  const handleCheckout = () => {
+    navigate('/checkout', { state: { items: cartItems } });
+  };
 
-        const newQuantity = Math.max(1, item.quantity + delta);
-
-        axios.put(`/api/cart/${userId}`, {
-            productId,
-            quantity: newQuantity
-        }).then(() => {
-            setCartItems(prev =>
-                prev.map(i =>
-                    i.productId === productId
-                        ? { ...i, quantity: newQuantity, totalPrice: i.price * newQuantity }
-                        : i
-                )
-            );
-        }).catch(err => {
-            console.error("Failed to update quantity:", err);
-        });
-    };
-
-    // 删除商品
-    const removeItem = (productId) => {
-        axios.delete(`/api/cart/${userId}/${productId}`)
-            .then(() => {
-                setCartItems(prev => prev.filter(i => i.productId !== productId));
-            })
-            .catch(err => {
-                console.error("Failed to delete item:", err);
-            });
-    };
-
-    // 总价
-    const totalPrice = cartItems.reduce(
-        (sum, item) => sum + item.price * item.quantity,
-        0
-    );
-
+  if (loading) {
     return (
-        <div className="container my-5">
-            {/* 导航栏（保持之前的） */}
-            
+      <Container className="my-5 text-center">
+        <Spinner animation="border" />
+      </Container>
 
-            {/* 主体内容 */}
-            {loading ? (
-                <div className="text-center my-5">
-                    <div className="spinner-border" role="status"></div>
-                </div>
-            ) : cartItems.length === 0 ? (
-                <div className="text-center my-5">
-                    <h4>Your cart is empty 🛒</h4>
-                </div>
-            ) : (
-                <>
-                    {cartItems.map(item => (
-                        <div key={item.productId} className="d-flex flex-column flex-md-row align-items-start border rounded mb-3 p-3 gap-3">
-                            {/* 商品信息 */}
-                            <div className="position-relative flex-fill" style={{ minWidth: '250px' }}>
-                                <div className="border p-2 rounded bg-light">
-                                    <h6 className="fw-bold mb-1">{item.name}</h6>
-                                    <p className="mb-1 text-muted">${item.price.toFixed(2)}</p>
-                                    <p className="mb-0">Delivery: {item.deliveryTime}</p>
-                                </div>
-                                <button
-                                    className="btn btn-sm btn-danger position-absolute top-0 end-0"
-                                    onClick={() => removeItem(item.productId)}
-                                    style={{ transform: 'translate(50%, -50%)' }}
-                                >
-                                    🗑️
-                                </button>
-                            </div>
-
-                            {/* 数量控制器 */}
-                            <div className="d-flex align-items-center justify-content-center flex-nowrap gap-2">
-                                <button className="btn btn-outline-secondary btn-sm" onClick={() => updateQuantity(item.productId, -1)}>▲</button>
-                                <span className="fs-5">{item.quantity}</span>
-                                <button className="btn btn-outline-secondary btn-sm" onClick={() => updateQuantity(item.productId, 1)}>▼</button>
-                            </div>
-
-                            {/* 小计 */}
-                            <div className="flex-grow-1 text-end fw-bold fs-5 mt-2 mt-md-0">
-                                ${(item.quantity * item.price).toFixed(2)}
-                            </div>
-                        </div>
-                    ))}
-
-                    {/* 总价与按钮 */}
-                    <div className="d-flex flex-column align-items-end mt-4">
-                        <h5 className="me-1">Total: ${totalPrice.toFixed(2)}</h5>
-                        <div className="d-flex flex-column flex-md-row gap-3 mt-2">
-                            <Link to="/" className="btn btn-outline-primary">🛍️ Shop More</Link>
-                            <button className="btn btn-success" onClick={handlePlaceOrder}>
-                                ✅ Place Order
-                            </button>
-
-                        </div>
-                    </div>
-                </>
-            )}
-        </div>
     );
+  }
+
+  return (
+    <Container className="my-5">
+      <h2 className="mb-4">Shopping Cart</h2>
+
+      {cartItems.length === 0 ? (
+        <Alert variant="info">
+          Your cart is empty. <Link to="/">Continue shopping</Link>
+        </Alert>
+      ) : (
+        <>
+          {cartItems.map((item, idx) => (
+            <Row
+              key={item.productId._id}
+              className="align-items-center py-3 border-top"
+            >
+           
+           <Col xs={3} md={2}>
+                <Image
+                
+                  src={
+                    `http://localhost:5001/${item.productId.ProductImages[0]}`
+                  }
+                  alt={item.productId.name}
+                  rounded
+                  fluid
+                />
+              </Col>
+
+              {/* 名称 & 单价 & 操作 */}
+              <Col xs={8} md={6}>
+                <h5>{item.productId.name}</h5>
+                <p className="text-muted mb-1">
+                  Unit Price: ${item.price.toFixed(2)}
+                </p>
+                <div className="d-flex align-items-center">
+                  <Button
+                    variant="light"
+                    size="sm"
+                    onClick={() =>
+                      handleQuantityChange(item.productId._id, item.quantity - 1)
+                    }
+                  >
+                    −
+                  </Button>
+                  <span className="px-3">{item.quantity}</span>
+                  <Button
+                    variant="light"
+                    size="sm"
+                    onClick={() =>
+                      handleQuantityChange(item.productId._id, item.quantity + 1)
+                    }
+                  >
+                    +
+                  </Button>
+                  <Button
+                    variant="link"
+                    size="sm"
+                    className="ms-3 text-danger p-0"
+                    onClick={() => handleDelete(item.productId._id)}
+                  >
+                    Delete
+                  </Button>
+                </div>
+              </Col>
+
+              {/* 小计 */}
+              <Col xs={12} md={4} className="mt-3 mt-md-0 text-end">
+                <p className="mb-1">Subtotal</p>
+                <h5>${item.totalPrice.toFixed(2)}</h5>
+              </Col>
+            </Row>
+          ))}
+
+          {/* 底部操作栏 */}
+          <Row className="align-items-center py-4">
+            <Col xs={12} md={4}>
+              <Button variant="outline-danger" onClick={handleClear}>
+                Clear Cart
+              </Button>
+            </Col>
+            <Col xs={12} md={8} className="text-end">
+              <Link to="/" className="btn btn-outline-primary me-2">
+                Continue Shopping
+              </Link>
+              <Button variant="success" onClick={handleCheckout}>
+                Checkout
+              </Button>
+            </Col>
+          </Row>
+        </>
+      )}
+    </Container>
+  );
+
+  
 };
+
+// item.productId.ProductImages &&
+//                     item.productId.ProductImages.length > 0
+//                       ? `http://localhost:5001/images/${item.productId.ProductImages[0]}`
+//                       : 'https://via.placeholder.com/150'
 
 export default CartPage;
