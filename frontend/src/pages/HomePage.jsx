@@ -55,7 +55,7 @@ const HomePage = () => {
         }
     };
 
-    const handelAddToCart = async (product) => {
+    const handleAddToCart = async (product) => {
         const user = await JSON.parse(localStorage.getItem("user"));
         console.log("LocalStorage user:", localStorage.getItem("user"));
         if (!user || !user.UserId) {
