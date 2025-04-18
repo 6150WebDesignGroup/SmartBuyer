@@ -93,7 +93,7 @@ const HomePage = () => {
 
     return (
         <di>
-            <UserNavbar />
+            {/* <UserNavbar /> */}
             <div className="container my-5">
                 <h2 className="mb-4 text-center">Welcome to Our Store</h2>
 

@@ -15,3 +15,6 @@ export const requestRefund = (orderId, reason) =>
 
 export const reviewRefund = (orderId, action) =>
   axios.put(`${API}/review-refund/${orderId}`, { action });
+
+export const deleteOrder = (orderId) =>
+  axios.delete(`${API}/delete/${orderId}`);
