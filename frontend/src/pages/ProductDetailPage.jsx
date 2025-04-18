@@ -1,21 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useParams } from "react-router-dom";
 
 const ProductDetailPage = () => {
-    const [imageIndex, setImageIndex] = useState(0);
     const { productId } = useParams();
-    const [product, setProduct] = useState(null);
-    const [loading, setLoading] = useState(true);
     const [productList, setProductList] = useState([]);
-    const [user, setUser] = useState(null); // ✅ 新增：用于记录登录状态
+    const [product, setProduct] = useState(null);
+    const [imageIndex, setImageIndex] = useState(0);
+    const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState(null);
 
     const fetchProduct = async () => {
         setLoading(true);
         try {
             const res = await axios.get(`http://localhost:5001/product/products/${productId}`);
-            console.log("product data from backend:", res.data);
             setProduct(res.data);
+            setImageIndex(0); // 每次加载新商品时重置图片轮播到第一张
         } catch (error) {
             console.error("Failed to load product", error);
         } finally {
@@ -25,22 +25,51 @@ const ProductDetailPage = () => {
 
     const fetchProductList = async () => {
         try {
-            const res = await axios.get("http://localhost:5001/product/products");
-            setProductList(res.data);
+            const res = await axios.post("http://localhost:5001/product/getAllAndSort", {
+                page: 1,
+                limit: 100
+            });
+            setProductList(res.data.productLists || []);
         } catch (error) {
-            console.error("Failed to fetch product list", error);
+            console.error("Failed to load product list", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchProduct();
+        fetchProductList();
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+            setUser(JSON.parse(storedUser));
+        }
+    }, [productId]);
+
+    const handlePrevImage = () => {
+        if (product?.ProductImages?.length > 0) {
+            setImageIndex((prev) => (prev - 1 + product.ProductImages.length) % product.ProductImages.length);
+        }
+    };
+
+    const handleNextImage = () => {
+        if (product?.ProductImages?.length > 0) {
+            setImageIndex((prev) => (prev + 1) % product.ProductImages.length);
         }
     };
 
     const handlePrev = () => {
-        if (productList.length === 0) return;
-        const random = productList[Math.floor(Math.random() * productList.length)];
-        window.location.href = `/product/${random._id}`;
-
+        if (productList.length > 0) {
+            const currentIndex = productList.findIndex(p => p._id === productId);
+            const prevIndex = (currentIndex - 1 + productList.length) % productList.length;
+            window.location.href = `/product/${productList[prevIndex]._id}`;
+        }
     };
 
     const handleNext = () => {
-        handlePrev();
+        if (productList.length > 0) {
+            const currentIndex = productList.findIndex(p => p._id === productId);
+            const nextIndex = (currentIndex + 1) % productList.length;
+            window.location.href = `/product/${productList[nextIndex]._id}`;
+        }
     };
 
     const handleAddToCart = async () => {
@@ -48,82 +77,70 @@ const ProductDetailPage = () => {
             alert("Please log in to add items to your cart.");
             return;
         }
+
         try {
             const res = await axios.post("http://localhost:5001/api/cart/addToCart", {
                 userId: user.UserId,
-                productId: product._id,
+                productId: productId,
                 quantity: 1
             });
 
             if (res.status === 200) {
                 alert("Product added to cart!");
             } else {
-                alert("Failed to add: " + res.data.error);
+                alert("Failed to add to cart.");
             }
-        } catch (err) {
-            console.error("Add to cart error:", err);
+        } catch (error) {
+            console.error("Error adding to cart", error);
             alert("Error adding to cart.");
         }
     };
 
-    useEffect(() => {
-        fetchProduct();
-        fetchProductList();
-        const storedUser = localStorage.getItem("user"); // ✅ 加载用户信息
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        }
-    }, [productId]);
+    if (loading || !product) {
+        return <div className="container text-center my-5"><div className="spinner-border" role="status"></div></div>;
+    }
 
-    if (loading) return <div className="text-center my-5">Loading...</div>;
-
-    if (!product) return <div className="text-center my-5">Product not found</div>;
-
-    const imagePath = product?.ProductImages?.[imageIndex]
+    const imagePath = product.ProductImages?.[imageIndex]
         ? `http://localhost:5001/${product.ProductImages[imageIndex]}`
-        : '';
+        : "https://via.placeholder.com/400";
 
     return (
-        <div className="container my-5">
+        <div className="container position-relative my-5">
+
+
             <h2 className="mb-4 text-center">{product.name}</h2>
-            <div className="row">
-                <div className="col-md-6 text-center">
-                    <img
-                        src={imagePath}
-                        alt={product.name}
-                        className="img-fluid mb-3"
-                        style={{ maxHeight: '400px', objectFit: 'cover' }}
-                    />
-                    <div className="d-flex justify-content-center gap-2">
-                        <button className="btn btn-outline-secondary" onClick={handlePrev}>
-                            &larr;
-                        </button>
-                        <button className="btn btn-outline-secondary" onClick={handleNext}>
-                            &rarr;
-                        </button>
-                    </div>
+            <div className="text-center">
+                <img src={imagePath} alt={product.name} style={{ width: "400px", height: "auto", objectFit: "contain" }} />
+                {/* 切换当前商品图片用的左右箭头 */}
+                <div className="d-flex justify-content-center gap-2 mt-2">
+                    <button className="btn btn-sm btn-outline-secondary" onClick={handlePrevImage}>← Prev Image</button>
+                    <button className="btn btn-sm btn-outline-secondary" onClick={handleNextImage}>Next Image →</button>
                 </div>
-                <div className="col-md-6">
-                    <div className="card p-3">
-                        <h5 className="mb-3">Product Description</h5>
-                        <p>{product.pageDesc || "No description available."}</p>
-                        <p><strong>Price:</strong> ${product.price}</p>
-                        <p><strong>Delivery Date:</strong> {product.deliveryTime || "N/A"}</p>
-                        <p><strong>Stock:</strong> {product.ProductQuantity || 0}</p>
-                        <button
-                            className="btn mt-3"
-                            style={{
-                                backgroundColor: user ? '#0d6efd' : '#adb5bd',
-                                color: user ? 'white' : 'black',
-                                cursor: user ? 'pointer' : 'not-allowed',
-                            }}
-                            onClick={handleAddToCart}
-                            disabled={!user}
-                        >
-                            Add to Cart
-                        </button>
-                    </div>
+            </div>
+
+            <div className="mt-4">
+                <h5>Description:</h5>
+                <p>{product.pageDesc}</p>
+                <p><strong>Price:</strong> ${product.price}</p>
+                <p><strong>Delivery:</strong> {product.deliveryTime}</p>
+                <p><strong>Stock:</strong> {product.ProductQuantity}</p>
+                <button
+                    className={`btn ${!user ? "btn-secondary" : "btn-primary"}`}
+                    onClick={handleAddToCart}
+                    disabled={!user}
+                >
+                    Add to Cart
+                </button>
+                {/* 商品切换按钮，放在页面底部 */}
+                <div className="mt-4 d-flex justify-content-center gap-3">
+                    <button className="btn btn-outline-dark" onClick={handlePrev}>
+                        ← Previous Product
+                    </button>
+                    <button className="btn btn-outline-dark" onClick={handleNext}>
+                        Next Product →
+                    </button>
                 </div>
+
             </div>
         </div>
     );
