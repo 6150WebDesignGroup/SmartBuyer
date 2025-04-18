@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import UserNavbar from "../components/userNavbar";
 
 const HomePage = () => {
     const [products, setProducts] = useState([]);
@@ -92,8 +91,7 @@ const HomePage = () => {
     };
 
     return (
-        <di>
-            <UserNavbar />
+        <div>
             <div className="container my-5">
                 <h2 className="mb-4 text-center">Welcome to Our Store</h2>
 
@@ -147,7 +145,7 @@ const HomePage = () => {
                     </button>
                 </div>
             </div>
-        </di>
+        </div>
     );
 };
 

@@ -51,56 +51,57 @@ const CategoryPage = () => {
   };
 
   return (
-    <div className="container mt-4">
-      <h2 className="mb-4 text-capitalize">{category} Products</h2>
+    <div>
+      <div className="container mt-4">
+        <h2 className="mb-4 text-capitalize">{category} Products</h2>
+        <div className="row">
+          {products.length === 0 ? (
+              <p>No products found in this category.</p>
+          ) : (
+              products.map((product) => (
+                  <div className="col-md-4 mb-4" key={product._id}>
+                    <div className="card h-100 shadow-sm">
+                      {product.ProductImages?.[0] && (
+                          <img
+                              src={`http://localhost:5001/${product.ProductImages[0]}`}
+                              className="card-img-top"
+                              alt={product.name}
+                              style={{ maxHeight: '200px', objectFit: 'cover' }}
+                          />
+                      )}
+                      <div className="card-body">
+                        <h5 className="card-title">{product.name}</h5>
+                        <p className="card-text text-muted">{product.cardDesc}</p>
+                        <p className="card-text">
+                          <strong>Price:</strong> ${product.price}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+              ))
+          )}
+        </div>
 
-      <div className="row">
-        {products.length === 0 ? (
-          <p>No products found in this category.</p>
-        ) : (
-          products.map((product) => (
-            <div className="col-md-4 mb-4" key={product._id}>
-              <div className="card h-100 shadow-sm">
-                {product.ProductImages?.[0] && (
-                  <img
-                    src={`http://localhost:5001/${product.ProductImages[0]}`}
-                    className="card-img-top"
-                    alt={product.name}
-                    style={{ maxHeight: '200px', objectFit: 'cover' }}
-                  />
-                )}
-                <div className="card-body">
-                  <h5 className="card-title">{product.name}</h5>
-                  <p className="card-text text-muted">{product.cardDesc}</p>
-                  <p className="card-text">
-                    <strong>Price:</strong> ${product.price}
-                  </p>
-                </div>
-              </div>
+        {products.length > 0 && (
+            <div className="d-flex justify-content-between my-4">
+              <button
+                  onClick={handlePrevious}
+                  className="btn btn-outline-secondary"
+                  disabled={page === 1}
+              >
+                Previous
+              </button>
+              <span>Page {page}</span>
+              <button
+                  onClick={handleNext}
+                  className="btn btn-outline-primary"
+                  disabled={!hasMore}
+              >
+                Next
+              </button>
             </div>
-          ))
         )}
       </div>
-
-      {products.length > 0 && (
-        <div className="d-flex justify-content-between my-4">
-          <button
-            onClick={handlePrevious}
-            className="btn btn-outline-secondary"
-            disabled={page === 1}
-          >
-            Previous
-          </button>
-          <span>Page {page}</span>
-          <button
-            onClick={handleNext}
-            className="btn btn-outline-primary"
-            disabled={!hasMore}
-          >
-            Next
-          </button>
-        </div>
-      )}
     </div>
   );
 };
