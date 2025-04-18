@@ -10,7 +10,10 @@ const RefundPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     requestRefund(orderId, reason)
-      .then(() => navigate('/orders'))
+        .then(()=> {
+          alert('退款申请已提交成功');
+          navigate('/orders');
+        })
       .catch(err => console.error('Failed to request refund', err));
   };
 

@@ -1,81 +1,129 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
 
 const ProductDetailPage = () => {
+    const [imageIndex, setImageIndex] = useState(0);
     const { productId } = useParams();
-    const navigate = useNavigate();
     const [product, setProduct] = useState(null);
-    const [allProducts, setAllProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [productList, setProductList] = useState([]);
+    const [user, setUser] = useState(null); // ✅ 新增：用于记录登录状态
 
-    const handleAddToCart = () => {
-        const userId = '123'; // ⚠️ 后期请改为真实登录用户 ID
-        axios.post(`/api/cart/${userId}`, { productId: product._id })
-            .then(() => alert('Added to cart!'))
-            .catch(err => console.error("Add to cart failed:", err));
+    const fetchProduct = async () => {
+        setLoading(true);
+        try {
+            const res = await axios.get(`http://localhost:5001/product/products/${productId}`);
+            console.log("product data from backend:", res.data);
+            setProduct(res.data);
+        } catch (error) {
+            console.error("Failed to load product", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchProductList = async () => {
+        try {
+            const res = await axios.get("http://localhost:5001/product/products");
+            setProductList(res.data);
+        } catch (error) {
+            console.error("Failed to fetch product list", error);
+        }
+    };
+
+    const handlePrev = () => {
+        if (productList.length === 0) return;
+        const random = productList[Math.floor(Math.random() * productList.length)];
+        window.location.href = `/product/${random._id}`;
+
+    };
+
+    const handleNext = () => {
+        handlePrev();
+    };
+
+    const handleAddToCart = async () => {
+        if (!user || !user.UserId) {
+            alert("Please log in to add items to your cart.");
+            return;
+        }
+        try {
+            const res = await axios.post("http://localhost:5001/api/cart/addToCart", {
+                userId: user.UserId,
+                productId: product._id,
+                quantity: 1
+            });
+
+            if (res.status === 200) {
+                alert("Product added to cart!");
+            } else {
+                alert("Failed to add: " + res.data.error);
+            }
+        } catch (err) {
+            console.error("Add to cart error:", err);
+            alert("Error adding to cart.");
+        }
     };
 
     useEffect(() => {
-        // 获取当前商品信息
-        axios.get(`/api/products/${productId}`)
-            .then(res => setProduct(res.data))
-            .catch(err => console.error("Failed to load product", err));
-
-        // 获取所有商品用于切换
-        axios.get('/api/products')
-            .then(res => setAllProducts(res.data))
-            .catch(err => console.error("Failed to fetch product list", err));
+        fetchProduct();
+        fetchProductList();
+        const storedUser = localStorage.getItem("user"); // ✅ 加载用户信息
+        if (storedUser) {
+            setUser(JSON.parse(storedUser));
+        }
     }, [productId]);
 
-    const switchRandomProduct = () => {
-        if (allProducts.length === 0) return;
-        const random = allProducts[Math.floor(Math.random() * allProducts.length)];
-        navigate(`/product/${random._id}`);
-    };
+    if (loading) return <div className="text-center my-5">Loading...</div>;
 
-    if (!product) {
-        return <div className="text-center my-5">Loading...</div>;
-    }
+    if (!product) return <div className="text-center my-5">Product not found</div>;
+
+    const imagePath = product?.ProductImages?.[imageIndex]
+        ? `http://localhost:5001/${product.ProductImages[imageIndex]}`
+        : '';
 
     return (
-        <div className="container my-4 position-relative">
-            {/* 商品名称 */}
-            <h2 className="text-center fw-bold mb-4">{product.name}</h2>
-
-            {/* 左右箭头按钮 */}
-            <button onClick={switchRandomProduct} className="btn btn-outline-secondary position-absolute top-50 start-0 translate-middle-y">
-                ◀
-            </button>
-            <button onClick={switchRandomProduct} className="btn btn-outline-secondary position-absolute top-50 end-0 translate-middle-y">
-                ▶
-            </button>
-
-            {/* 商品图片 */}
-            <div className="text-center mb-4">
-                <img
-                    src={product.ProductImages?.[0] || 'https://via.placeholder.com/400'}
-                    alt={product.name}
-                    className="img-fluid rounded"
-                    style={{ maxHeight: '400px' }}
-                />
-            </div>
-
-            {/* 商品详细介绍（单独区域） */}
-            <div className="bg-white p-4 mb-4 rounded shadow-sm border">
-                <h4 className="mb-3">Product Description</h4>
-                <p style={{ whiteSpace: 'pre-line' }}>{product.pageDesc}</p>
-            </div>
-
-            {/* 商品其他信息 */}
-            <div className="bg-light p-4 rounded shadow-sm">
-                <p><strong>Price:</strong> ${product.price.toFixed(2)}</p>
-                <p><strong>Delivery Date:</strong> {product.ProductDeliveryTime}</p>
-                <p><strong>Stock:</strong> {product.ProductQuantity}</p>
-
-                <button className="btn btn-primary mt-3" onClick={handleAddToCart}>
-                    Add to Cart
-                </button>
-
+        <div className="container my-5">
+            <h2 className="mb-4 text-center">{product.name}</h2>
+            <div className="row">
+                <div className="col-md-6 text-center">
+                    <img
+                        src={imagePath}
+                        alt={product.name}
+                        className="img-fluid mb-3"
+                        style={{ maxHeight: '400px', objectFit: 'cover' }}
+                    />
+                    <div className="d-flex justify-content-center gap-2">
+                        <button className="btn btn-outline-secondary" onClick={handlePrev}>
+                            &larr;
+                        </button>
+                        <button className="btn btn-outline-secondary" onClick={handleNext}>
+                            &rarr;
+                        </button>
+                    </div>
+                </div>
+                <div className="col-md-6">
+                    <div className="card p-3">
+                        <h5 className="mb-3">Product Description</h5>
+                        <p>{product.pageDesc || "No description available."}</p>
+                        <p><strong>Price:</strong> ${product.price}</p>
+                        <p><strong>Delivery Date:</strong> {product.deliveryTime || "N/A"}</p>
+                        <p><strong>Stock:</strong> {product.ProductQuantity || 0}</p>
+                        <button
+                            className="btn mt-3"
+                            style={{
+                                backgroundColor: user ? '#0d6efd' : '#adb5bd',
+                                color: user ? 'white' : 'black',
+                                cursor: user ? 'pointer' : 'not-allowed',
+                            }}
+                            onClick={handleAddToCart}
+                            disabled={!user}
+                        >
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     );

@@ -41,8 +41,13 @@ const OrderPage = () => {
 
   const handlePay = (orderId) => {
     payOrder(orderId)
-      .then(() => window.location.reload())
-      .catch(err => console.error('Payment failed', err));
+        .then(() => {
+          // 不刷新整个页面，而是重新获取订单数据
+          getUserOrders(userId)
+              .then(res => setOrders(res.data))
+              .catch(err => console.error('Failed to fetch orders', err));
+        })
+        .catch(err => console.error('Payment failed', err));
   };
 
   const handleRefund = (orderId) => {
@@ -108,8 +113,8 @@ const OrderPage = () => {
   }
 
   return (
-    <div className="container mt-4">
-      <h2>Your Orders</h2>
+      <div className="container mt-4">
+        <h2>Your Orders</h2>
 
       {error && (
         <Alert variant="danger">

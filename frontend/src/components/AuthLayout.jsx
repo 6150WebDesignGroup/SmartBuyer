@@ -5,9 +5,7 @@ const AuthLayout = ({ children }) => {
   return (
     <div className="auth-layout">
       <div className="auth-header">
-        <Link to="/" className="auth-logo text-center d-block my-4">
-          <img src="/logo.png" alt="SmartBuyer" className="img-fluid" style={{maxHeight: '50px'}} />
-        </Link>
+        {/* Logo 已移除 */}
       </div>
       <div className="auth-content">
         {children}

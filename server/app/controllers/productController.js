@@ -101,3 +101,13 @@ exports.getProductById = async (req, res) => {
 };
 
 console.log('🔥 productController loaded');
+
+exports.getAllProducts = async (req, res) => {
+    try {
+        const products = await Product.find();
+        res.json(products);
+    } catch (err) {
+        console.error('getAllProducts error:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
