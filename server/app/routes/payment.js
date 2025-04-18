@@ -1,10 +1,10 @@
+
 const express = require("express");
-const router = express.Router();
+// const router = express.Router();
 // const paymentController = require("../controllers/paymentController");
-//
-// // 使用Stripe 作为测试支付api 需要官网插件挂载转接？？
+
+// // 创建支付意图
 // router.post("/create-payment-intent", paymentController.createPaymentIntent);
-//
 // // Webhook 回调，必须使用 raw body
 // router.post(
 //     "/webhook",
@@ -12,5 +12,5 @@ const router = express.Router();
 //     paymentController.handleStripeWebhook
 // );
 
-module.exports = router;
+// module.exports = router;
 
