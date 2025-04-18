@@ -3,17 +3,18 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 
 const ProductDetailPage = () => {
-
     const [imageIndex, setImageIndex] = useState(0);
     const { id } = useParams();
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [productList, setProductList] = useState([]);
+    const [user, setUser] = useState(null); // ✅ 新增：用于记录登录状态
 
     const fetchProduct = async () => {
         setLoading(true);
         try {
             const res = await axios.get(`http://localhost:5001/product/products/${id}`);
+            console.log("product data from backend:", res.data);
             setProduct(res.data);
         } catch (error) {
             console.error("Failed to load product", error);
@@ -42,7 +43,6 @@ const ProductDetailPage = () => {
     };
 
     const handleAddToCart = async () => {
-        const user = JSON.parse(localStorage.getItem("user"));
         if (!user || !user.UserId) {
             alert("Please log in to add items to your cart.");
             return;
@@ -69,9 +69,11 @@ const ProductDetailPage = () => {
     useEffect(() => {
         fetchProduct();
         fetchProductList();
+        const storedUser = localStorage.getItem("user"); // ✅ 加载用户信息
+        if (storedUser) {
+            setUser(JSON.parse(storedUser));
+        }
     }, [id]);
-
-
 
     if (loading) return <div className="text-center my-5">Loading...</div>;
 
@@ -80,7 +82,6 @@ const ProductDetailPage = () => {
     const imagePath = product?.ProductImages?.[imageIndex]
         ? `http://localhost:5001/${product.ProductImages[imageIndex]}`
         : '';
-
 
     return (
         <div className="container my-5">
@@ -105,11 +106,20 @@ const ProductDetailPage = () => {
                 <div className="col-md-6">
                     <div className="card p-3">
                         <h5 className="mb-3">Product Description</h5>
-                        <p>{product.description || "No description available."}</p>
+                        <p>{product.pageDesc || "No description available."}</p>
                         <p><strong>Price:</strong> ${product.price}</p>
                         <p><strong>Delivery Date:</strong> {product.deliveryTime || "N/A"}</p>
                         <p><strong>Stock:</strong> {product.ProductQuantity || 0}</p>
-                        <button className="btn btn-primary mt-3" onClick={handleAddToCart}>
+                        <button
+                            className="btn mt-3"
+                            style={{
+                                backgroundColor: user ? '#0d6efd' : '#adb5bd',
+                                color: user ? 'white' : 'black',
+                                cursor: user ? 'pointer' : 'not-allowed',
+                            }}
+                            onClick={handleAddToCart}
+                            disabled={!user}
+                        >
                             Add to Cart
                         </button>
                     </div>
