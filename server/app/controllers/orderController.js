@@ -1,12 +1,12 @@
 const mongoose = require("mongoose");
 const Order = require("../model/Order");
-const Product = require("../model/Product"); 
+const Product = require("../model/Product");
 
 // 创建订单
 exports.createOrder = async (req, res) => {
   try {
     console.log('Create order request body:', JSON.stringify(req.body, null, 2));
-    
+
     let { userId, productList, totalAmount } = req.body;
 
     if (!userId || !Array.isArray(productList) || productList.length === 0) {
@@ -46,7 +46,7 @@ exports.getUserOrders = async (req, res) => {
   try {
     let { userId } = req.params;
     console.log('Fetching orders for userId:', userId);
-    
+
     userId = Number(userId);
     if (isNaN(userId)) {
       return res.status(400).json({ error: "Invalid userId format" });
@@ -59,14 +59,14 @@ exports.getUserOrders = async (req, res) => {
         model: 'Product', // 确保这与你的Product模型名称匹配
         select: 'name price cardDesc ProductImages' // 选择要包含的字段
       });
-      
+
     console.log(`Found ${orders.length} orders for user ${userId}`);
-    
+
     // 检查填充是否成功
     if (orders.length > 0 && orders[0].productList && orders[0].productList.length > 0) {
       console.log('First product sample:', orders[0].productList[0].product);
     }
-    
+
     res.status(200).json(orders);
   } catch (err) {
     console.error('Error fetching orders:', err.message);
@@ -78,7 +78,7 @@ exports.getUserOrders = async (req, res) => {
 //   try {
 //     let { userId } = req.params;
 //     console.log('Fetching orders for userId:', userId);
-    
+
 //     userId = Number(userId);
 //     if (isNaN(userId)) {
 //       return res.status(400).json({ error: "Invalid userId format" });
@@ -87,12 +87,12 @@ exports.getUserOrders = async (req, res) => {
 //     // First, get all orders for the user
 //     const orders = await Order.find({ userId }).populate('productList.product');
 //     console.log(`Found ${orders.length} orders for user ${userId}`);
-    
+
 //     // Process each order and populate product data
 //     const populatedOrders = await Promise.all(orders.map(async (order) => {
 //       // Convert mongoose document to plain object
 //       const orderObject = order.toObject();
-      
+
 //       // Process product items
 //       if (orderObject.productList && Array.isArray(orderObject.productList)) {
 //         // Use Promise.all to process all products in parallel
@@ -100,7 +100,7 @@ exports.getUserOrders = async (req, res) => {
 //           try {
 //             // Convert the item to an object we can modify
 //             const itemObject = { ...item };
-            
+
 //             // If product is just an ID string, fetch the actual product
 //             if (item.product && typeof item.product === 'string') {
 //               const productData = await Product.findById(item.product);
@@ -111,12 +111,12 @@ exports.getUserOrders = async (req, res) => {
 //                 itemObject.productName = 'Product not found';
 //               }
 //             }
-            
+
 //             // If product object doesn't have name, add a placeholder
 //             if (!itemObject.product || !itemObject.product.name) {
 //               itemObject.productName = itemObject.productName || 'Unknown Product';
 //             }
-            
+
 //             return itemObject;
 //           } catch (err) {
 //             console.error('Error processing product item:', err);
@@ -126,13 +126,13 @@ exports.getUserOrders = async (req, res) => {
 //             };
 //           }
 //         }));
-        
+
 //         orderObject.productList = populatedProductList;
 //       }
-      
+
 //       return orderObject;
 //     }));
-    
+
 //     console.log('Sending populated orders:', JSON.stringify(populatedOrders, null, 2));
 //     res.status(200).json(populatedOrders);
 //   } catch (err) {
@@ -180,7 +180,7 @@ exports.requestRefund = async (req, res) => {
       {
         refundRequested: true,
         refundReason: reason,
-        refundStatus: "pending",
+        refundStatus: "Pending",
         status: "refunding"
       },
       { new: true }
@@ -227,7 +227,7 @@ exports.reviewRefund = async (req, res) => {
   }
 };
 
-// ✅ 删除订单
+// 删除订单
 exports.deleteOrder = async (req, res) => {
   try {
     const orderId = req.params.id;
@@ -236,5 +236,30 @@ exports.deleteOrder = async (req, res) => {
   } catch (err) {
     console.error('Error deleting order:', err);
     res.status(500).json({ error: 'Failed to delete order' });
+  }
+};
+
+
+
+//Admin 去拿所有的refund请求
+exports.getAllRefund = async (req, res) => {
+  try {
+    // Ensure product is correctly populated
+    const orders = await Order.find({ status: 'Pending' }) // Filter for 'Pending' orders
+        .populate({
+          path: 'productList.product',
+          model: 'Product',
+          select: 'name price cardDesc ProductImages',
+        });
+
+    // Check if population was successful
+    if (orders.length > 0 && orders[0].productList && orders[0].productList.length > 0) {
+      console.log('First product sample:', orders[0].productList[0].product);
+    }
+
+    res.status(200).json(orders); // Respond with the filtered orders
+  } catch (err) {
+    console.error('Error fetching orders:', err.message);
+    res.status(500).json({ error: "Server error: Unable to fetch orders", details: err.message });
   }
 };

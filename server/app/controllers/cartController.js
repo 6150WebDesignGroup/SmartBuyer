@@ -6,7 +6,7 @@ const Product = require('../model/Product');
  * Returns an array of cart items, each with populated product details.
  */
 const getCartByUserId = async (req, res) => {
-  const { userId } = req.params; 
+  const { userId } = req.params;
   try {
     const cart = await Cart.findOne({ userId })
                            .populate('items.productId');
@@ -24,7 +24,7 @@ const getCartByUserId = async (req, res) => {
  * Update the quantity of a specific item in the cart.
  */
 const updateCartItemQuantity = async (req, res) => {
-  const { userId } = req.params; 
+  const { userId } = req.params;
   const { productId, quantity } = req.body;
 
   try {
@@ -54,7 +54,7 @@ const updateCartItemQuantity = async (req, res) => {
  * Delete a single item from the cart.
  */
 const deleteCartItem = async (req, res) => {
-  const { userId, productId } = req.params; 
+  const { userId, productId } = req.params;
 
   try {
     const cart = await Cart.findOne({ userId });
@@ -76,7 +76,7 @@ const deleteCartItem = async (req, res) => {
  * Clear all items in a user's cart.
  */
 const clearCart = async (req, res) => {
-  const { userId } = req.params; 
+  const { userId } = req.params;
 
   try {
     const cart = await Cart.findOne({ userId });
@@ -102,9 +102,11 @@ const clearCart = async (req, res) => {
 const addToCart = async (req, res) => {
   try {
 
+    // 1) 将原来的大写 UserId 改为小写 userId
     // const { UserId, productId, quantity = 1 } = req.body;
     const { userId, productId, quantity = 1 } = req.body;
 
+    // 校验产品是否存在
     const product = await Product.findById(productId);
     if (!product) {
       return res.status(404).json({ error: 'Product not found' });
@@ -116,7 +118,7 @@ const addToCart = async (req, res) => {
     let cart = await Cart.findOne({ userId });
     if (!cart) {
       cart = new Cart({
-        userId,            
+        userId,
         items: [{
           productId,
           quantity,
