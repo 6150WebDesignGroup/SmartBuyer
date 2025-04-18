@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './AdminNavBar.css'; 
+import '../styles/AdminNavBar.css'; 
 
 const AdminNavBar = ({ handleLogout }) => {
   return (
