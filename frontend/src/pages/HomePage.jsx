@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
+import '../styles/home.css';
 
 
 
@@ -91,7 +92,9 @@ const HomePage = () => {
         if (dir === 'next' && page < totalPages) setPage(page + 1);
     };
     return (
-        <div className="container my-5">
+        <div className="homepage-background">
+          <div className="container">
+      
             <h2 className="mb-4 text-center">Welcome to Our Store</h2>
             {/* 排序选项 */}
             <div className="mb-4 d-flex justify-content-center align-items-center">
@@ -106,10 +109,11 @@ const HomePage = () => {
                     <option value="deliveryTime">Delivery Time</option>
                 </select>
             </div>
+        </div>
 
             {/* 加载中 */}
             {loading ? (
-                <div className="text-center">
+                <div className="card-body text-center">
                     <div className="spinner-border" role="status"></div>
                 </div>
             ) : (
@@ -118,7 +122,8 @@ const HomePage = () => {
                     <div className="row">
                         {products.map(product => (
                             <div key={product._id} className="col-md-4 mb-4">
-                                <div className="card h-100">
+                                <div className="card h-100 shadow-sm rounded custom-card">
+
                                     <img
                                         src={product.image || 'https://via.placeholder.com/300'}
                                         className="card-img-top"
