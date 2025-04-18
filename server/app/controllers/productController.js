@@ -37,20 +37,15 @@ exports.searchProduct = async (req, res) => {
     }
 };
 
-// sort by name price deliverytime
+// sort by name price time
 
-exports.getAllByCategory = async (req, res) => {
+exports.getAll = async (req, res) => {
     try {
         const {
-            categoryId,
             page = 1,
             limit = 6,
             sortBy = 'name' // 可为 name / price / time
         } = req.body;
-
-        if (!categoryId) {
-            return res.status(400).json({ error: "categoryId is required." });
-        }
 
         const pageNum = Number(page);
         const pageSize = Number(limit);
@@ -69,10 +64,11 @@ exports.getAllByCategory = async (req, res) => {
                 sortField.name = 1;
         }
 
-        const filter = { categoryId: Number(categoryId) };
+        // 获取总数（不带 filter）
+        const total = await Product.countDocuments();
 
-        const total = await Product.countDocuments(filter);
-        const productLists = await Product.find(filter)
+        // 获取分页数据
+        const productLists = await Product.find()
             .skip(skip)
             .limit(pageSize)
             .sort(sortField);
@@ -86,10 +82,11 @@ exports.getAllByCategory = async (req, res) => {
             },
         });
     } catch (err) {
-        console.error('getAllByCategory error:', err);
+        console.error('getAll error:', err);
         return res.status(500).json({ error: 'Server error' });
     }
 };
+
 
 // GET /api/products/:id
 exports.getProductById = async (req, res) => {
@@ -103,3 +100,14 @@ exports.getProductById = async (req, res) => {
     }
 };
 
+console.log('🔥 productController loaded');
+
+exports.getAllProducts = async (req, res) => {
+    try {
+        const products = await Product.find();
+        res.json(products);
+    } catch (err) {
+        console.error('getAllProducts error:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+};

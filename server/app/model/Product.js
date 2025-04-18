@@ -19,3 +19,4 @@ const Product = new mongoose.Schema({
 // this will add id and growth auto
 Product.plugin(AutoIncrement, { inc_field: "ProductId" });
 module.exports = mongoose.model("Product",Product);
+

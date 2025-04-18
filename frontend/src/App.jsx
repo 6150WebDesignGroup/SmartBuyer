@@ -17,6 +17,7 @@ import DefaultLayout from './components/DefaultLayout';
 import { AuthProvider } from './AuthContext';
 import { getCurrentUser, logoutUser } from './services/authService';
 import './styles/auth.css';
+import UserBasicLayout from "./pages/UserBasicLayout";
 
 const App = () => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -65,122 +66,82 @@ const App = () => {
   };
 
   return (
-    <AuthProvider>
-      <Router>
-        {/* NAVBAR */}
-        <nav className="navbar navbar-expand-lg navbar-light bg-light px-4 shadow-sm">
-          <div className="container-fluid d-flex justify-content-between align-items-center">
+      <AuthProvider>
+        <Router>
+          <Routes>
+            {/* 公共页面 */}
+            <Route path="/" element={
+              <UserBasicLayout currentUser={currentUser} handleLogout={handleLogout} cartItemCount={cartItemCount}>
+                <HomePage />
+              </UserBasicLayout>
+            } />
 
-            {/* LEFT SECTION: Logo + Nav */}
-            <div className="d-flex align-items-center">
-              <Link to="/" className="navbar-brand d-flex align-items-center me-4">
-                <img src="/logo.png" alt="Logo" height="40" className="me-2" />
-                <span className="fw-bold fs-5">SmartBuyer</span>
-              </Link>
+            <Route path="/category/:categoryName" element={
+              <UserBasicLayout currentUser={currentUser} handleLogout={handleLogout} cartItemCount={cartItemCount}>
+                <CategoryPage />
+              </UserBasicLayout>
+            } />
 
-              {/* Main nav */}
-              <ul className="navbar-nav flex-row gap-3">
-                <li className="nav-item">
-                  <Link className="nav-link" to="/">Home</Link>
-                </li>
+            <Route path="/search" element={
+              <UserBasicLayout currentUser={currentUser} handleLogout={handleLogout} cartItemCount={cartItemCount}>
+                <SearchPage />
+              </UserBasicLayout>
+            } />
 
-                <li className="nav-item dropdown">
-                  <span className="nav-link dropdown-toggle" id="categoryDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Categories
-                  </span>
-                  <ul className="dropdown-menu" aria-labelledby="categoryDropdown">
-                    {/* TODO: Replace these with categories from backend */}
-                    <li><Link className="dropdown-item" to="/category/electronics">Electronics</Link></li>
-                    <li><Link className="dropdown-item" to="/category/clothing">Clothing</Link></li>
-                    <li><Link className="dropdown-item" to="/category/books">Books</Link></li>
-                  </ul>
-                </li>
+            <Route path="/product/:productId" element={
+              <UserBasicLayout currentUser={currentUser} handleLogout={handleLogout} cartItemCount={cartItemCount}>
+                <ProductDetailPage />
+              </UserBasicLayout>
+            } />
 
-                <li className="nav-item">
-                  <Link className="nav-link" to="/search">Search</Link>
-                </li>
-              </ul>
-            </div>
+            {/* 认证页面 */}
+            <Route path="/login" element={
+              <AuthLayout>
+                <LoginPage />
+              </AuthLayout>
+            } />
 
-            {/* RIGHT SECTION: User menu + Cart */}
-            <div className="d-flex align-items-center gap-4">
+            <Route path="/register" element={
+              <AuthLayout>
+                <RegisterPage />
+              </AuthLayout>
+            } />
 
-              {/* ACCOUNT DROPDOWN - 根据登录状态显示不同内容 */}
-              {currentUser ? (
-                <div className="dropdown">
-                  <span className="nav-link dropdown-toggle" id="accountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Hello, {currentUser.name} / Account
-                  </span>
-                  <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
-                    {/* 只保留Logout选项 */}
-                    <li>
-                      <button className="dropdown-item" onClick={handleLogout}>Logout</button>
-                    </li>
-                  </ul>
-                </div>
-              ) : (
-                <div>
-                  <Link to="/login" className="nav-link">Sign In</Link>
-                </div>
-              )}
+            {/* 需要登录的页面 */}
+            <Route path="/cart" element={
+              <UserBasicLayout currentUser={currentUser} handleLogout={handleLogout} cartItemCount={cartItemCount}>
+                <CartPage />
+              </UserBasicLayout>
+            } />
 
-              {/* RETURNS & ORDERS - 仅登录用户可见 */}
-              {currentUser && (
-                <div>
-                  <Link className="nav-link" to="/orders">Returns & Orders</Link>
-                </div>
-              )}
+            <Route path="/orders" element={
+              <UserBasicLayout currentUser={currentUser} handleLogout={handleLogout} cartItemCount={cartItemCount}>
+                <OrderPage />
+              </UserBasicLayout>
+            } />
 
-              {/* CART */}
-              <div className="position-relative">
-                <Link to="/cart" className="nav-link d-flex align-items-center">
-                  <i className="bi bi-cart4 fs-4 text-dark"></i>
-                  {cartItemCount > 0 && (
-                    <span
-                      className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                      style={{ fontSize: '0.7rem', padding: '4px 6px', minWidth: '20px' }}
-                    >
-                      {cartItemCount}
-                    </span>
-                  )}
-                </Link>
-              </div>
+            <Route path="/refunds" element={
+              <UserBasicLayout currentUser={currentUser} handleLogout={handleLogout} cartItemCount={cartItemCount}>
+                <RefundPage />
+              </UserBasicLayout>
+            } />
 
-            </div>
-          </div>
-        </nav>
+            <Route path="/profile" element={
+              <UserBasicLayout currentUser={currentUser} handleLogout={handleLogout} cartItemCount={cartItemCount}>
+                <UserProfile />
+              </UserBasicLayout>
+            } />
 
-        {/* ROUTES */}
-        <Routes>
-          {/* 公共页面 */}
-          <Route path="/" element={<HomePage />} />
-          <Route path="/category/:categoryName" element={<CategoryPage />} />
-          <Route path="/search" element={<SearchPage />} />
-          <Route path="/product/:productId" element={<ProductDetailPage />} />
+            {/* 管理员页面 */}
+            <Route path="/admin/products" element={
+              <UserBasicLayout currentUser={currentUser} handleLogout={handleLogout} cartItemCount={cartItemCount}>
+                <ProductManagementPage />
+              </UserBasicLayout>
+            } />
+          </Routes>
+        </Router>
+      </AuthProvider>
 
-          {/* 认证页面 */}
-          <Route path="/login" element={
-            <AuthLayout>
-              <LoginPage />
-            </AuthLayout>
-          } />
-          <Route path="/register" element={
-            <AuthLayout>
-              <RegisterPage />
-            </AuthLayout>
-          } />
-
-          {/* 需要登录的页面 */}
-          <Route path="/cart" element={<CartPage />} />
-          <Route path="/orders" element={<OrderPage />} />
-          <Route path="/refunds" element={<RefundPage />} />
-          <Route path="/profile" element={<UserProfile />} />
-
-          {/* 管理员页面 */}
-          <Route path="/admin/products" element={<ProductManagementPage />} />
-        </Routes>
-      </Router>
-    </AuthProvider>
   );
 };
 

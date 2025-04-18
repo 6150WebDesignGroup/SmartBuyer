@@ -65,7 +65,8 @@ const LoginPage = () => {
       // 强制更新用户数据到localStorage
       if (response.user) {
         localStorage.setItem('user', JSON.stringify(response.user));
-        
+        localStorage.setItem('userId', response.user.UserId);
+        console.log(JSON.stringify(response.user))
         // 添加一个小延迟，确保本地存储已更新
         setTimeout(() => {
           if (response.user.role === "Admin") {
@@ -114,49 +115,76 @@ const LoginPage = () => {
             />
             {errors.email && <p className="error-text">{errors.email}</p>}
           </div>
-          
-          <div className="form-group">
-            <div className="password-header">
-              <label htmlFor="pwd">Password</label>
-              <Link to="/forgot-password" className="forgot-password">Forgot your password?</Link>
+
+          <h1>Sign in</h1>
+
+          {serverError && (
+              <div className="auth-alert auth-alert-error">
+                <div className="auth-alert-icon">!</div>
+                <div className="auth-alert-message">
+                  <span>There was a problem</span>
+                  <p>{serverError}</p>
+                </div>
+              </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="auth-form">
+            <div className="form-group">
+              <label htmlFor="email">Email</label>
+              <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className={errors.email ? 'error' : ''}
+              />
+              {errors.email && <p className="error-text">{errors.email}</p>}
             </div>
-            <input 
-              type="password" 
-              id="pwd" 
-              name="pwd" 
-              value={formData.pwd}
-              onChange={handleChange}
-              className={errors.pwd ? 'error' : ''}
-            />
-            {errors.pwd && <p className="error-text">{errors.pwd}</p>}
+
+            <div className="form-group">
+              <div className="password-header">
+                <label htmlFor="pwd">Password</label>
+                <Link to="/forgot-password" className="forgot-password">Forgot your password?</Link>
+              </div>
+              <input
+                  type="password"
+                  id="pwd"
+                  name="pwd"
+                  value={formData.pwd}
+                  onChange={handleChange}
+                  className={errors.pwd ? 'error' : ''}
+              />
+              {errors.pwd && <p className="error-text">{errors.pwd}</p>}
+            </div>
+
+            <button
+                type="submit"
+                className="auth-button"
+                disabled={loading}
+            >
+              {loading ? 'Signing in...' : 'Sign in'}
+            </button>
+          </form>
+
+          <div className="auth-divider">
+            <span>New to SmartBuyer?</span>
           </div>
-          
-          <button 
-            type="submit" 
-            className="auth-button" 
-            disabled={loading}
-          >
-            {loading ? 'Signing in...' : 'Sign in'}
-          </button>
-        </form>
-        
-        <div className="auth-divider">
-          <span>New to SmartBuyer?</span>
+
+          <Link to="/register" className="auth-secondary-button">
+            Create your SmartBuyer account
+          </Link>
         </div>
-        
-        <Link to="/register" className="auth-secondary-button">
-          Create your SmartBuyer account
-        </Link>
-      </div>
-      
-      <div className="auth-footer">
-        <div className="auth-footer-links">
-          <a href="#">Conditions of Use</a>
-          <a href="#">Privacy Notice</a>
-          <a href="#">Help</a>
-        </div>
-        <div className="auth-copyright">
-          © 2025, SmartBuyer.com, Inc. or its affiliates
+
+        <div className="auth-footer">
+          <div className="auth-footer-links">
+            <a href="#">Conditions of Use</a>
+            <a href="#">Privacy Notice</a>
+            <a href="#">Help</a>
+          </div>
+          <div className="auth-copyright">
+            © 2025, SmartBuyer.com, Inc. or its affiliates
+          </div>
         </div>
       </div>
     </div>

@@ -1,3 +1,4 @@
+const path = require("path");
 const express = require("express");
 const app = express();
 const port =  5001;
@@ -9,6 +10,14 @@ const orderRoutes = require('./app/routes/orderRoutes');
 const bodyParser =  require('body-parser');
 const cors = require("cors");
 // const session = require('express-session');
+
+const path = require('path');
+app.use('/product', express.static(path.join(__dirname, 'imgs/Product')));
+app.use('/imgs', express.static(path.join(__dirname, 'imgs')));
+
+// using env files
+require('dotenv').config();
+
 
 // session settings
 app.use(session({
@@ -29,13 +38,6 @@ mongoose.connect(MongoUrl)
   // Session 配置 - 必须在 cors 和路由之前
 
 
-  // app.use(session({
-  //   secret: 'your_secret_key',
-  //   resave: false,
-  //   saveUninitialized: true,
-  //   cookie: { secure: false } // 在开发环境中设为false
-  // }));
-
 app.use(session({
   secret: 'your_secret_key', // 用于签名会话 ID cookie 的密钥
   resave: false,             // 即使会话没有被修改也不强制保存
@@ -48,11 +50,10 @@ app.use(session({
 
 // 确保CORS配置正确
 app.use(cors({
-  origin: 'http://localhost:3000',
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+    origin: 'http://localhost:3000', // 明确指定前端 origin，避免潜在 CSRF 风险
+    credentials: true,
 }));
+
 
 app.use(express.json());
 // set Routes
@@ -62,8 +63,11 @@ app.use('/api/cart', require('./app/routes/cartRoutes'));
 app.use('/product', require('./app/routes/productRoutes'));
 app.use('/order', require('./app/routes/orderRoutes'));
 
+//app.use("/payment/webhook", express.raw({ type: "application/json" }));
+// app.use("/paymentTest", require("./app/routes/payment"));
 
-app.use("/imgs",express.static("imgs"));
+
+
 
 
 app.get("/", (req, res) => {
@@ -75,11 +79,17 @@ app.get("/", (req, res) => {
 // swagger config  ps: from swagger doc
 
 
-// onst swaggerDocs = swaggerJsdoc(swaggerOptions);
+// const swaggerDocs = swaggerJsdoc(swaggerOptions);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
 
-
+app._router.stack
+    .filter(r => r.route)
+    .forEach(r => {
+        const methods = Object.keys(r.route.methods).join(',').toUpperCase();
+        const path = r.route.path;
+        console.log(`[${methods}] ${path}`);
+    });
 

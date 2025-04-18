@@ -16,12 +16,13 @@ router.post("/add", upload.array("imgFile", 5), adminController.addProduct);
 router.put("/edit", upload.array("imgFile", 5), adminController.editProduct);
 router.delete("/delete", adminController.deleteProduct);
 router.get('/products/:id', productController.getProductById);
+router.get('/products', productController.getAllProducts);
 
 // sort todo
 // search Name desc
 router.post('/searchProduct',productController.searchProduct);
 // 输入 name , price ,time 表示通过不同的需求排序
-router.post("/getAllAndSortByCate",productController.getAllByCategory);
+router.post("/getAllAndSort",productController.getAll);
 
-
+console.log('🔥 productRoute loaded');
 module.exports = router;

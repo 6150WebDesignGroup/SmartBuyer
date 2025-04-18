@@ -1,34 +1,35 @@
 const express = require('express');
-
 const router = express.Router();
+
+// controller methods
 const {
-    getCartByUserId,
-    updateCartItemQuantity,
-    deleteCartItem,
-    clearCart
+  getCartByUserId,
+  updateCartItemQuantity,
+  deleteCartItem,
+  clearCart,
+  addToCart
 } = require('../controllers/cartController');
 
-// 获取指定用户的购物车内容
-// GET /api/cart/:userId
+// Get all items in a user's cart (with populated product details)
 router.get('/:userId', getCartByUserId);
 
-// 修改某个商品的数量（加减）
+// Update the quantity of one cart item
 // PUT /api/cart/:userId
-// body: { productId: ObjectId, quantity: Number }
+// body: { productId, quantity }
 router.put('/:userId', updateCartItemQuantity);
 
-// 删除购物车中某个商品
+// Remove a specific product from the cart
 // DELETE /api/cart/:userId/:productId
 router.delete('/:userId/:productId', deleteCartItem);
 
-
-// 清空整个购物车
+// Empty the entire cart for a user
 // DELETE /api/cart/clear/:userId
-router.delete('/clear/:userId', clearCart);
+router.delete('/clear/:UserId', clearCart);
 
-// router.delete('/clear/:userId', cartController.clearCart);
-
+// Add an item to the cart (or increment quantity if already present)
+// POST /api/cart/addToCart
+// body: { UserId, productId, quantity? }
+router.post('/addToCart', addToCart);
 
 module.exports = router;
-
 
