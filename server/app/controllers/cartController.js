@@ -1,137 +1,156 @@
 const Cart = require('../model/Cart');
 const Product = require('../model/Product');
 
-// 获取用户购物车
+/**
+ * Get the shopping cart for a given user ID.
+ * Returns an array of cart items, each with populated product details.
+ */
 const getCartByUserId = async (req, res) => {
-    const { userId } = req.params;
-    try {
-        const cart = await Cart.findOne({ userId });
-        if (!cart) return res.status(200).json([]); // 没有购物车就返回空数组
-        res.json(cart.items);
-    } catch (err) {
-        res.status(500).json({ error: '服务器错误：获取购物车失败' });
+  const { userId } = req.params; // 小写 userId
+  try {
+    const cart = await Cart.findOne({ userId })
+                           .populate('items.productId');
+    if (!cart) {
+      return res.status(200).json([]);
     }
+    return res.status(200).json(cart.items);
+  } catch (err) {
+    console.error('Error fetching cart:', err);
+    return res.status(500).json({ error: 'Server error: failed to fetch cart' });
+  }
 };
 
-// 更新某个商品的数量
+/**
+ * Update the quantity of a specific item in the cart.
+ */
 const updateCartItemQuantity = async (req, res) => {
-    const { userId } = req.params;
-    const { productId, quantity } = req.body;
+  const { userId } = req.params; // 小写 userId
+  const { productId, quantity } = req.body;
 
-    try {
-        const cart = await Cart.findOne({ userId });
-        if (!cart) return res.status(404).json({ error: '购物车不存在' });
-
-        const item = cart.items.find(i => i.productId.toString() === productId);
-        if (!item) return res.status(404).json({ error: '商品不在购物车中' });
-
-        item.quantity = quantity;
-        item.totalPrice = item.price * quantity;
-        item.LastUpdate = Date.now();
-
-        await cart.save();
-        res.json({ message: '数量已更新' });
-    } catch (err) {
-        res.status(500).json({ error: '服务器错误：更新失败' });
+  try {
+    const cart = await Cart.findOne({ userId });
+    if (!cart) {
+      return res.status(404).json({ error: 'Cart not found' });
     }
+
+    const item = cart.items.find(i => i.productId.toString() === productId);
+    if (!item) {
+      return res.status(404).json({ error: 'Item not found in cart' });
+    }
+
+    item.quantity = quantity;
+    item.totalPrice = item.price * quantity;
+    item.LastUpdate = new Date();
+
+    await cart.save();
+    return res.status(200).json({ message: 'Quantity updated successfully' });
+  } catch (err) {
+    console.error('Error updating cart item quantity:', err);
+    return res.status(500).json({ error: 'Server error: failed to update quantity' });
+  }
 };
 
-// 删除购物车中的某个商品
+/**
+ * Delete a single item from the cart.
+ */
 const deleteCartItem = async (req, res) => {
-    const { userId, productId } = req.params;
-    try {
-        const cart = await Cart.findOne({ userId });
-        if (!cart) return res.status(404).json({ error: '购物车不存在' });
+  const { userId, productId } = req.params; // 小写 userId
 
-        cart.items = cart.items.filter(item => item.productId.toString() !== productId);
-        await cart.save();
-
-        res.json({ message: '商品已移除' });
-    } catch (err) {
-        res.status(500).json({ error: '服务器错误：删除失败' });
+  try {
+    const cart = await Cart.findOne({ userId });
+    if (!cart) {
+      return res.status(404).json({ error: 'Cart not found' });
     }
+
+    cart.items = cart.items.filter(item => item.productId.toString() !== productId);
+    await cart.save();
+
+    return res.status(200).json({ message: 'Item removed successfully' });
+  } catch (err) {
+    console.error('Error removing item from cart:', err);
+    return res.status(500).json({ error: 'Server error: failed to remove item' });
+  }
 };
 
-
-// addToCart
-const addToCart = async (req, res) => {
-    try {
-        const { UserId, productId, quantity=1 } = req.body;
-
-        // 1. 获取商品详情
-        const product = await Product.findById(productId);
-        if (!product) return res.status(404).json({ error: "Product not found" });
-
-        const price = product.price;
-        const totalPrice = price * quantity;
-
-        // 2. 查询用户购物车
-        let cart = await Cart.findOne({ UserId });
-
-        if (!cart) {
-            // 3. 如果购物车不存在，创建新购物车
-            cart = new Cart({
-                UserId,
-                items: [{
-                    productId,
-                    quantity,
-                    price,
-                    totalPrice,
-                }],
-                LastUpdate: new Date()
-            });
-        } else {
-            // 4. 检查商品是否已在购物车中
-            const existingItem = cart.items.find(item => item.productId.equals(productId));
-            if (existingItem) {
-                // 如果存在，更新数量和总价
-                existingItem.quantity += quantity;
-                existingItem.totalPrice = existingItem.quantity * price;
-                existingItem.LastUpdate = new Date();
-            } else {
-                // 否则添加新商品
-                cart.items.push({
-                    productId,
-                    quantity,
-                    price,
-                    totalPrice,
-                });
-            }
-
-            cart.LastUpdate = new Date();
-        }
-
-        await cart.save();
-        return res.status(200).json({ message: "Item added to cart", cart });
-
-    } catch (err) {
-        console.error("Add to cart error:", err);
-        return res.status(500).json({ error: "Server error" });
-    }
-};
-
-
+/**
+ * Clear all items in a user's cart.
+ */
 const clearCart = async (req, res) => {
-    const { userId } = req.params;
-    try {
-        const cart = await Cart.findOne({ userId });
-        if (!cart) return res.status(404).json({ error: '购物车不存在' });
+  const { userId } = req.params; // 小写 userId
 
-        cart.items = []; // 清空商品
-        await cart.save();
-
-        res.json({ message: '购物车已清空' });
-    } catch (err) {
-        res.status(500).json({ error: '清空购物车失败', details: err });
+  try {
+    const cart = await Cart.findOne({ userId });
+    if (!cart) {
+      return res.status(404).json({ error: 'Cart not found' });
     }
+
+    cart.items = [];
+    await cart.save();
+
+    return res.status(200).json({ message: 'Cart cleared successfully' });
+  } catch (err) {
+    console.error('Error clearing cart:', err);
+    return res.status(500).json({ error: 'Server error: failed to clear cart' });
+  }
 };
 
+/**
+ * Add an item to a user's cart (or increment quantity if it already exists).
+ */
+const addToCart = async (req, res) => {
+  try {
+    // ─────── 修改开始 ───────
+    // 1) 将原来的大写 UserId 改为小写 userId
+    // const { UserId, productId, quantity = 1 } = req.body;
+    const { userId, productId, quantity = 1 } = req.body;
+    // ─────── 修改结束 ───────
+
+    // 校验产品是否存在
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
+    const price = product.price;
+    const totalPrice = price * quantity;
+
+    // 查找或创建购物车（都用小写 userId）
+    let cart = await Cart.findOne({ userId });
+    if (!cart) {
+      cart = new Cart({
+        userId,               // ── 修改：这里也用小写 userId
+        items: [{
+          productId,
+          quantity,
+          price,
+          totalPrice,
+        }],
+        LastUpdate: new Date()
+      });
+    } else {
+      const existingItem = cart.items.find(item => item.productId.equals(productId));
+      if (existingItem) {
+        existingItem.quantity += quantity;
+        existingItem.totalPrice = existingItem.quantity * price;
+        existingItem.LastUpdate = new Date();
+      } else {
+        cart.items.push({ productId, quantity, price, totalPrice });
+      }
+      cart.LastUpdate = new Date();
+    }
+
+    await cart.save();
+    return res.status(200).json({ message: 'Item added to cart', cart });
+  } catch (err) {
+    console.error('Error adding to cart:', err);
+    return res.status(500).json({ error: 'Server error: failed to add item to cart' });
+  }
+};
 
 module.exports = {
-    getCartByUserId,
-    updateCartItemQuantity,
-    deleteCartItem,
-    //addItemToCart,
-    clearCart,
-    addToCart,
+  getCartByUserId,
+  updateCartItemQuantity,
+  deleteCartItem,
+  clearCart,
+  addToCart,
 };
