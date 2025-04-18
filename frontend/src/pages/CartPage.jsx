@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   getCartByUserId,
   updateCartItemQuantity,
   deleteCartItem,
   clearCart
 } from '../services/cartService';
-import { Link, useNavigate } from 'react-router-dom';
 import {
   Container,
   Row,
@@ -180,10 +180,4 @@ const CartPage = () => {
 
   
 };
-
-// item.productId.ProductImages &&
-//                     item.productId.ProductImages.length > 0
-//                       ? `http://localhost:5001/images/${item.productId.ProductImages[0]}`
-//                       : 'https://via.placeholder.com/150'
-
 export default CartPage;

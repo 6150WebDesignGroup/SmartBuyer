@@ -95,3 +95,8 @@ exports.reviewRefund = async (req, res) => {
     res.status(500).json({ error: "Refund review failed", details: err });
   }
 };
+//Admin 去拿所有的refund请求
+exports.getAllRefund = async (req, res) => {
+
+
+}

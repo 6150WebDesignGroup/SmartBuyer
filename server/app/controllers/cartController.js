@@ -101,12 +101,9 @@ const clearCart = async (req, res) => {
  */
 const addToCart = async (req, res) => {
   try {
-    // ─────── 修改开始 ───────
     // 1) 将原来的大写 UserId 改为小写 userId
     // const { UserId, productId, quantity = 1 } = req.body;
     const { userId, productId, quantity = 1 } = req.body;
-    // ─────── 修改结束 ───────
-
     // 校验产品是否存在
     const product = await Product.findById(productId);
     if (!product) {

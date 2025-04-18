@@ -18,5 +18,8 @@ router.put("/refund/:orderId", orderController.requestRefund);
 // Admin 审核退款
 router.put("/review-refund/:orderId", orderController.reviewRefund);
 
+// Admin 获得所有的退款请求
+router.get("/getAllRefund",orderController.getAllRefund);
+
 
 module.exports = router;
