@@ -7,7 +7,8 @@ const {
   payOrder,
   requestRefund,
   reviewRefund,
-  deleteOrder
+  deleteOrder,
+  getAllRefund
 } = require("../controllers/orderController");
 
 // 创建订单
@@ -28,7 +29,7 @@ router.put("/review-refund/:orderId", reviewRefund);
 // 删除订单
 router.delete("/:id", deleteOrder);
 // Admin 获得所有的退款请求
-router.get("/getAllRefund",orderController.getAllRefund);
+router.get("/getAllRefund",getAllRefund);
 
 
 module.exports = router;

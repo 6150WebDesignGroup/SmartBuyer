@@ -227,7 +227,7 @@ exports.reviewRefund = async (req, res) => {
   }
 };
 
-// ✅ 删除订单
+// 删除订单
 exports.deleteOrder = async (req, res) => {
   try {
     const orderId = req.params.id;
@@ -238,8 +238,27 @@ exports.deleteOrder = async (req, res) => {
     res.status(500).json({ error: 'Failed to delete order' });
   }
 };
+
+
+
 //Admin 去拿所有的refund请求
 exports.getAllRefund = async (req, res) => {
+  try {
 
-
+    // 确保product正确填充
+    const orders = await Order.find()
+        .populate({
+          path: 'productList.product',
+          model: 'Product', // 确保这与你的Product模型名称匹配
+          select: 'name price cardDesc ProductImages' // 选择要包含的字段
+        });
+    // 检查填充是否成功
+    if (orders.length > 0 && orders[0].productList && orders[0].productList.length > 0) {
+      console.log('First product sample:', orders[0].productList[0].product);
+    }
+    res.status(200).json(orders);
+  } catch (err) {
+    console.error('Error fetching orders:', err.message);
+    res.status(500).json({ error: "Server error: Unable to fetch orders", details: err.message });
+  }
 }
