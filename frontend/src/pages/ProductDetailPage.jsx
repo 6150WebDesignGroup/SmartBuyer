@@ -4,7 +4,7 @@ import axios from 'axios';
 
 const ProductDetailPage = () => {
     const [imageIndex, setImageIndex] = useState(0);
-    const { id } = useParams();
+    const { productId } = useParams();
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [productList, setProductList] = useState([]);
@@ -13,7 +13,7 @@ const ProductDetailPage = () => {
     const fetchProduct = async () => {
         setLoading(true);
         try {
-            const res = await axios.get(`http://localhost:5001/product/products/${id}`);
+            const res = await axios.get(`http://localhost:5001/product/products/${productId}`);
             console.log("product data from backend:", res.data);
             setProduct(res.data);
         } catch (error) {
@@ -36,6 +36,7 @@ const ProductDetailPage = () => {
         if (productList.length === 0) return;
         const random = productList[Math.floor(Math.random() * productList.length)];
         window.location.href = `/product/${random._id}`;
+
     };
 
     const handleNext = () => {
@@ -72,7 +73,7 @@ const ProductDetailPage = () => {
         if (storedUser) {
             setUser(JSON.parse(storedUser));
         }
-    }, [id]);
+    }, [productId]);
 
     if (loading) return <div className="text-center my-5">Loading...</div>;
 

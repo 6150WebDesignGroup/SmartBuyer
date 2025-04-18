@@ -15,6 +15,10 @@ import {
   Spinner,
   Alert
 } from 'react-bootstrap';
+import {
+  createOrder,
+  payOrder
+} from '../services/orderService';
 
 const CartPage = () => {
 
@@ -71,8 +75,34 @@ const CartPage = () => {
     }
   };
 
-  const handleCheckout = () => {
-    navigate('/checkout', { state: { items: cartItems } });
+  const handleCheckout = async () => {
+    try {
+      const productList = cartItems.map(item => ({
+        product: item.productId._id,
+        productName: item.productId.name,
+        quantity: item.quantity
+      }));
+      
+      const totalAmount = cartItems.reduce((total, item) => total + item.totalPrice, 0);
+      
+      const orderResponse = await createOrder({
+        userId,
+        productList,
+        totalAmount
+      });
+      
+      console.log('create order successful:', orderResponse.data);
+      
+      const paymentResponse = await payOrder(orderResponse.data._id);
+      console.log('pay order successful:', paymentResponse.data);
+      
+      await clearCart(userId);
+      
+
+      navigate('/orders', { state: { newOrderId: orderResponse.data._id } });
+    } catch (err) {
+      console.error('checkout failure:', err.response?.data || err.message);
+    }
   };
 
   if (loading) {
