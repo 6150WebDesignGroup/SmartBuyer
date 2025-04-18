@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { loginUser } from '../services/authService';
-import '../styles/auth.css';
+import '../styles/Login.css';
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
@@ -119,7 +119,6 @@ const LoginPage = () => {
             <div className="form-group">
               <div className="password-header">
                 <label htmlFor="pwd">Password</label>
-                <Link to="/forgot-password" className="forgot-password">Forgot your password?</Link>
               </div>
               <input
                   type="password"
@@ -150,7 +149,7 @@ const LoginPage = () => {
           </Link>
         </div>
 
-        <div className="auth-footer">
+        {/* <div className="auth-footer">
           <div className="auth-footer-links">
             <a href="#">Conditions of Use</a>
             <a href="#">Privacy Notice</a>
@@ -159,7 +158,7 @@ const LoginPage = () => {
           <div className="auth-copyright">
             © 2025, SmartBuyer.com, Inc. or its affiliates
           </div>
-        </div>
+        </div> */}
       </div>
   );
 };

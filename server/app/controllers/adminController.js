@@ -95,14 +95,13 @@ exports.addProduct = async (req, res) => {
             cardDesc,
             pageDesc,
             price,
-            ProductNumber,
             ProductDeliveryTime,//text
             deliveryTime,//number
             ProductQuantity
         } = req.body;
         if (
             !name || !categoryId || !cardDesc || !pageDesc ||
-            !price || !ProductNumber || !ProductDeliveryTime || !ProductQuantity
+            !price|| !ProductDeliveryTime || !ProductQuantity
         ) {
             return res.status(400).json({ error: "Missing required fields" });
         }
@@ -121,7 +120,6 @@ exports.addProduct = async (req, res) => {
             cardDesc,
             pageDesc,
             price,
-            ProductNumber,
             ProductQuantity,
             ProductDeliveryTime,
             deliveryTime: deliveryTime, // 可选：作为数字用于排序
@@ -143,7 +141,7 @@ exports.editProduct = async (req, res) => {
         const { id } = req.body;
         if (!id) return res.status(400).json({ error: "Product ID is required" });
 
-        const product = await Product.findOne({ ProductId: id });
+        const product = await Product.findById(id);
         if (!product) return res.status(404).json({ error: "Product not found" });
 
         // 可修改字段列表
@@ -180,10 +178,10 @@ exports.deleteProduct = async (req, res) => {
         const { id } = req.body;
         if (!id) return res.status(400).json({ error: "Product ID is required" });
 
-        const product = await Product.findOne({ ProductId: id });
+        const product = await Product.findById(id);
         if (!product) return res.status(404).json({ error: "Product not found" });
 
-        await Product.deleteOne({ ProductId: id });
+        await Product.deleteOne({ _id: id });
         res.status(200).json({ message: "Product deleted successfully" });
     } catch (err) {
         console.error("Delete error:", err);

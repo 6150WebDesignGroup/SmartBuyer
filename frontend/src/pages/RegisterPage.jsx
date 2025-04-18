@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { registerUser } from '../services/authService';
-import '../styles/auth.css';
+import '../styles/Register.css';
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -102,11 +102,8 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-form-container">
-        <div className="auth-logo">
-          <img src="/logo.png" alt="SmartBuyer" />
-        </div>
+    <div className="register-page">
+      <div className="auth-form-container register-layout">   
         
         <h1>Create account</h1>
         
@@ -219,17 +216,6 @@ const RegisterPage = () => {
         <Link to="/login" className="auth-secondary-button">
           Sign in to your account
         </Link>
-      </div>
-      
-      <div className="auth-footer">
-        <div className="auth-footer-links">
-          <a href="#">Conditions of Use</a>
-          <a href="#">Privacy Notice</a>
-          <a href="#">Help</a>
-        </div>
-        <div className="auth-copyright">
-          © 2025, SmartBuyer.com, Inc. or its affiliates
-        </div>
       </div>
     </div>
   );
