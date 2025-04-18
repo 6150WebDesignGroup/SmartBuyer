@@ -17,6 +17,7 @@ import {
 } from 'react-bootstrap';
 
 const CartPage = () => {
+
   const userId = localStorage.getItem('userId');
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -79,6 +80,7 @@ const CartPage = () => {
       <Container className="my-5 text-center">
         <Spinner animation="border" />
       </Container>
+
     );
   }
 

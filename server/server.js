@@ -66,8 +66,10 @@ app.use("/admin",require("./app/routes/adminRoutes"));
 app.use('/api/cart', require('./app/routes/cartRoutes'));
 app.use('/product', require('./app/routes/productRoutes'));
 app.use('/order', require('./app/routes/orderRoutes'));
+
 app.use("/payment/webhook", express.raw({ type: "application/json" }));
 // app.use("/paymentTest", require("./app/routes/payment"));
+
 
 
 
@@ -80,7 +82,7 @@ app.get("/", (req, res) => {
 // swagger config  ps: from swagger doc
 
 
-// onst swaggerDocs = swaggerJsdoc(swaggerOptions);
+// const swaggerDocs = swaggerJsdoc(swaggerOptions);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

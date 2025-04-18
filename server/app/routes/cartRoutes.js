@@ -24,7 +24,7 @@ router.delete('/:userId/:productId', deleteCartItem);
 
 // Empty the entire cart for a user
 // DELETE /api/cart/clear/:userId
-router.delete('/clear/:userId', clearCart);
+router.delete('/clear/:UserId', clearCart);
 
 // Add an item to the cart (or increment quantity if already present)
 // POST /api/cart/addToCart

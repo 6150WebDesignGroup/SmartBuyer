@@ -87,12 +87,14 @@ const clearCart = async (req, res) => {
     cart.items = [];
     await cart.save();
 
+
     return res.status(200).json({ message: 'Cart cleared successfully' });
   } catch (err) {
     console.error('Error clearing cart:', err);
     return res.status(500).json({ error: 'Server error: failed to clear cart' });
   }
 };
+
 
 /**
  * Add an item to a user's cart (or increment quantity if it already exists).
