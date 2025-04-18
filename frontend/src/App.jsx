@@ -17,6 +17,7 @@ import DefaultLayout from './components/DefaultLayout';
 import { AuthProvider } from './AuthContext';
 import { getCurrentUser, logoutUser } from './services/authService';
 import './styles/auth.css';
+import UserBasicLayout from "./pages/UserBasicLayout";
 
 const App = () => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -65,42 +66,82 @@ const App = () => {
   };
 
   return (
-    <AuthProvider>
-      <Router>
+      <AuthProvider>
+        <Router>
+          <Routes>
+            {/* 公共页面 */}
+            <Route path="/" element={
+              <UserBasicLayout currentUser={currentUser} handleLogout={handleLogout} cartItemCount={cartItemCount}>
+                <HomePage />
+              </UserBasicLayout>
+            } />
 
+            <Route path="/category/:categoryName" element={
+              <UserBasicLayout currentUser={currentUser} handleLogout={handleLogout} cartItemCount={cartItemCount}>
+                <CategoryPage />
+              </UserBasicLayout>
+            } />
 
-        {/* ROUTES */}
-        <Routes>
-          {/* 公共页面 */}
-          <Route path="/" element={<HomePage />} />
-          <Route path="/category/:categoryName" element={<CategoryPage />} />
-          <Route path="/search" element={<SearchPage />} />
-          <Route path="/product/:id" element={<ProductDetailPage />} />
+            <Route path="/search" element={
+              <UserBasicLayout currentUser={currentUser} handleLogout={handleLogout} cartItemCount={cartItemCount}>
+                <SearchPage />
+              </UserBasicLayout>
+            } />
 
+            <Route path="/product/:productId" element={
+              <UserBasicLayout currentUser={currentUser} handleLogout={handleLogout} cartItemCount={cartItemCount}>
+                <ProductDetailPage />
+              </UserBasicLayout>
+            } />
 
-          {/* 认证页面 */}
-          <Route path="/login" element={
-            <AuthLayout>
-              <LoginPage />
-            </AuthLayout>
-          } />
-          <Route path="/register" element={
-            <AuthLayout>
-              <RegisterPage />
-            </AuthLayout>
-          } />
+            {/* 认证页面 */}
+            <Route path="/login" element={
+              <AuthLayout>
+                <LoginPage />
+              </AuthLayout>
+            } />
 
-          {/* 需要登录的页面 */}
-          <Route path="/cart" element={<CartPage />} />
-          <Route path="/orders" element={<OrderPage />} />
-          <Route path="/refunds" element={<RefundPage />} />
-          <Route path="/profile" element={<UserProfile />} />
+            <Route path="/register" element={
+              <AuthLayout>
+                <RegisterPage />
+              </AuthLayout>
+            } />
 
-          {/* 管理员页面 */}
-          <Route path="/admin/products" element={<ProductManagementPage />} />
-        </Routes>
-      </Router>
-    </AuthProvider>
+            {/* 需要登录的页面 */}
+            <Route path="/cart" element={
+              <UserBasicLayout currentUser={currentUser} handleLogout={handleLogout} cartItemCount={cartItemCount}>
+                <CartPage />
+              </UserBasicLayout>
+            } />
+
+            <Route path="/orders" element={
+              <UserBasicLayout currentUser={currentUser} handleLogout={handleLogout} cartItemCount={cartItemCount}>
+                <OrderPage />
+              </UserBasicLayout>
+            } />
+
+            <Route path="/refunds" element={
+              <UserBasicLayout currentUser={currentUser} handleLogout={handleLogout} cartItemCount={cartItemCount}>
+                <RefundPage />
+              </UserBasicLayout>
+            } />
+
+            <Route path="/profile" element={
+              <UserBasicLayout currentUser={currentUser} handleLogout={handleLogout} cartItemCount={cartItemCount}>
+                <UserProfile />
+              </UserBasicLayout>
+            } />
+
+            {/* 管理员页面 */}
+            <Route path="/admin/products" element={
+              <UserBasicLayout currentUser={currentUser} handleLogout={handleLogout} cartItemCount={cartItemCount}>
+                <ProductManagementPage />
+              </UserBasicLayout>
+            } />
+          </Routes>
+        </Router>
+      </AuthProvider>
+
   );
 };
 

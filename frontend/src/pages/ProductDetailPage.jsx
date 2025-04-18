@@ -47,7 +47,6 @@ const ProductDetailPage = () => {
             alert("Please log in to add items to your cart.");
             return;
         }
-
         try {
             const res = await axios.post("http://localhost:5001/api/cart/addToCart", {
                 userId: user.UserId,

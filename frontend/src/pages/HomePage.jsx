@@ -94,7 +94,6 @@ const HomePage = () => {
     };
 
     return (
-
         <div className="container my-5">
             <h2 className="mb-4 text-center">Welcome to Our Store</h2>
 
@@ -110,7 +109,6 @@ const HomePage = () => {
             {loading ? (
                 <div className="text-center">
                     <div className="spinner-border" role="status"></div>
-
                 </div>
 
             ) : (
@@ -192,7 +190,7 @@ const HomePage = () => {
                     </button>
                 </div>
             </div>
-        </di>
+        </div>
     );
 };
 
