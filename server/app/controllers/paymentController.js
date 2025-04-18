@@ -4,7 +4,7 @@ const { v4: uuidv4 } = require("uuid"); // 用于唯一 ID
 const Order = require("../model/Order"); // 根据你的路径调整
 
 
-// // 添加支付方式
+// 添加支付方式
 exports.addPaymentMethod = async (req, res) => {
     try {
         const { userEmail, userId, method } = req.body;
@@ -169,6 +169,5 @@ exports.getpaymentMethod = async (req, res) => {
 //             console.log(`Unhandled event type: ${event.type}`);
 //     }
 //
-
 //     res.json({ received: true });
 // };
