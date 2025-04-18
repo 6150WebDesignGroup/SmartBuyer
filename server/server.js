@@ -9,7 +9,9 @@ const orderRoutes = require('./app/routes/orderRoutes');
 const bodyParser =  require('body-parser');
 const cors = require("cors");
 // const session = require('express-session');
-
+const path = require('path');
+app.use('/product', express.static(path.join(__dirname, 'imgs/Product')));
+app.use('/imgs', express.static(path.join(__dirname, 'imgs')));
 // using env files
 require('dotenv').config();
 
@@ -57,7 +59,7 @@ app.use("/admin",require("./app/routes/adminRoutes"));
 app.use('/api/cart', require('./app/routes/cartRoutes'));
 app.use('/product', require('./app/routes/productRoutes'));
 app.use('/order', require('./app/routes/orderRoutes'));
-app.use("/payment/webhook", express.raw({ type: "application/json" }));
+//app.use("/payment/webhook", express.raw({ type: "application/json" }));
 // app.use("/paymentTest", require("./app/routes/payment"));
 
 

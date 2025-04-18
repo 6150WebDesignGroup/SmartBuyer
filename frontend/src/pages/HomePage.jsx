@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const HomePage = () => {
     const [products, setProducts] = useState([]);
@@ -7,6 +8,7 @@ const HomePage = () => {
     const [sortType, setSortType] = useState('price');
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+    const navigate = useNavigate();
 
     const fetchProducts = async () => {
         setLoading(true);
@@ -47,20 +49,13 @@ const HomePage = () => {
         }
     };
 
-    // add product to cart
     const handelAddToCart = async (product) => {
         const user = await JSON.parse(localStorage.getItem("user"));
-        console.log("LocalStorage user:", localStorage.getItem("user"));
-        if (!user || ! user.UserId) {
+        if (!user || !user.UserId) {
             alert("Please log in to add items to your cart.");
             return;
         }
 
-        const payload = {
-            userId: user.UserId,
-            productId: product._id,
-            quantity: 1
-        };
         try {
             const res = await axios.post("http://localhost:5001/api/cart/addToCart", {
                 userId: user.UserId,
@@ -77,9 +72,7 @@ const HomePage = () => {
             console.error("Axios error:", error);
             alert("Error adding to cart.");
         }
-
     };
-
 
     useEffect(() => {
         fetchProducts();
@@ -124,8 +117,14 @@ const HomePage = () => {
                                     <p className="card-text">Price: ${product.price}</p>
                                     <p className="card-text">Delivery: {product.deliveryTime}</p>
                                     <p className="card-text">Qty: {product.quantity}</p>
-                                    <button className="btn btn-primary mt-auto" onClick={() => handelAddToCart(product)}>
+
+                                    <button className="btn btn-primary mt-auto mb-2" onClick={() => handelAddToCart(product)}>
                                         Add to Cart
+                                    </button>
+
+                                    {/* Learn More Button */}
+                                    <button className="btn btn-outline-info" onClick={() => navigate(`/product/${product._id}`)}>
+                                        Learn More
                                     </button>
                                 </div>
                             </div>

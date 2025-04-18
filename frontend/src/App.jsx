@@ -156,7 +156,8 @@ const App = () => {
           <Route path="/" element={<HomePage />} />
           <Route path="/category/:categoryName" element={<CategoryPage />} />
           <Route path="/search" element={<SearchPage />} />
-          <Route path="/product/:productId" element={<ProductDetailPage />} />
+          <Route path="/product/:id" element={<ProductDetailPage />} />
+
 
           {/* 认证页面 */}
           <Route path="/login" element={
