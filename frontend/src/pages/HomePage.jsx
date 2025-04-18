@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+
 import { useNavigate } from 'react-router-dom';
+
+import UserNavbar from "../components/userNavbar";
+
 
 const HomePage = () => {
     const [products, setProducts] = useState([]);
@@ -84,22 +88,20 @@ const HomePage = () => {
     };
 
     return (
-        <div className="container my-5">
-            <h2 className="mb-4 text-center">Welcome to Our Store</h2>
+        <di>
+            <UserNavbar />
+            <div className="container my-5">
+                <h2 className="mb-4 text-center">Welcome to Our Store</h2>
 
-            <div className="mb-4 d-flex justify-content-center align-items-center">
-                <label className="me-2 fw-bold">Sort by:</label>
-                <select className="form-select w-auto" value={sortType} onChange={e => setSortType(e.target.value)}>
-                    <option value="price">Price</option>
-                    <option value="name">Name</option>
-                    <option value="time">Delivery Time</option>
-                </select>
-            </div>
-
-            {loading ? (
-                <div className="text-center">
-                    <div className="spinner-border" role="status"></div>
+                <div className="mb-4 d-flex justify-content-center align-items-center">
+                    <label className="me-2 fw-bold">Sort by:</label>
+                    <select className="form-select w-auto" value={sortType} onChange={e => setSortType(e.target.value)}>
+                        <option value="price">Price</option>
+                        <option value="name">Name</option>
+                        <option value="time">Delivery Time</option>
+                    </select>
                 </div>
+
             ) : (
                 <div className="row">
                     {products.map(product => (
@@ -126,23 +128,51 @@ const HomePage = () => {
                                     <button className="btn btn-outline-info" onClick={() => navigate(`/product/${product._id}`)}>
                                         Learn More
                                     </button>
+
+
+                {loading ? (
+                    <div className="text-center">
+                        <div className="spinner-border" role="status"></div>
+                    </div>
+                ) : (
+                    <div className="row">
+                        {products.map(product => (
+                            <div key={product._id} className="col-md-4 mb-4">
+                                <div className="card h-100">
+                                    <img
+                                        src={product.image || 'https://via.placeholder.com/300'}
+                                        className="card-img-top"
+                                        alt={product.name}
+                                        style={{ height: '200px', objectFit: 'cover' }}
+                                    />
+                                    <div className="card-body d-flex flex-column">
+                                        <h5 className="card-title">{product.name}</h5>
+                                        <p className="card-text text-muted">Category: {product.category}</p>
+                                        <p className="card-text">Price: ${product.price}</p>
+                                        <p className="card-text">Delivery: {product.deliveryTime}</p>
+                                        <p className="card-text">Qty: {product.quantity}</p>
+                                        <button className="btn btn-primary mt-auto" onClick={() => handelAddToCart(product)}>
+                                            Add to Cart
+                                        </button>
+                                    </div>
+
                                 </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
-            )}
+                        ))}
+                    </div>
+                )}
 
-            <div className="d-flex justify-content-center align-items-center mt-4">
-                <button className="btn btn-outline-secondary me-2" onClick={() => handlePageChange('prev')} disabled={page === 1}>
-                    Prev
-                </button>
-                <span className="fw-bold mx-2">{page} / {totalPages}</span>
-                <button className="btn btn-outline-secondary" onClick={() => handlePageChange('next')} disabled={page === totalPages}>
-                    Next
-                </button>
+                <div className="d-flex justify-content-center align-items-center mt-4">
+                    <button className="btn btn-outline-secondary me-2" onClick={() => handlePageChange('prev')} disabled={page === 1}>
+                        Prev
+                    </button>
+                    <span className="fw-bold mx-2">{page} / {totalPages}</span>
+                    <button className="btn btn-outline-secondary" onClick={() => handlePageChange('next')} disabled={page === totalPages}>
+                        Next
+                    </button>
+                </div>
             </div>
-        </div>
+        </di>
     );
 };
 
