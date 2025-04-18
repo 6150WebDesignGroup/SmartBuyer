@@ -10,7 +10,6 @@ const orderRoutes = require('./app/routes/orderRoutes');
 const bodyParser =  require('body-parser');
 const cors = require("cors");
 // const session = require('express-session');
-
 app.use('/product', express.static(path.join(__dirname, 'imgs/Product')));
 app.use('/imgs', express.static(path.join(__dirname, 'imgs')));
 

@@ -9,7 +9,9 @@ const {
   clearCart,
   addToCart
 } = require('../controllers/cartController');
-
+// Empty the entire cart for a user
+// DELETE /api/cart/clear/:userId
+router.delete('/clear/:userId', clearCart);
 // Get all items in a user's cart (with populated product details)
 router.get('/:userId', getCartByUserId);
 
@@ -22,9 +24,7 @@ router.put('/:userId', updateCartItemQuantity);
 // DELETE /api/cart/:userId/:productId
 router.delete('/:userId/:productId', deleteCartItem);
 
-// Empty the entire cart for a user
-// DELETE /api/cart/clear/:userId
-router.delete('/clear/:UserId', clearCart);
+
 
 // Add an item to the cart (or increment quantity if already present)
 // POST /api/cart/addToCart

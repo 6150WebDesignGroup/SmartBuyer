@@ -57,13 +57,15 @@ exports.getAllCategories = async (req, res) => {
 
 exports.getProductsByCategory = async (req, res) => {
     try {
-        const { categoryId, page = 1 } = req.body;
+        const { categoryId, page = 1 ,limit=0 } = req.body;
 
         if (!categoryId) {
             return res.status(400).json({ error: "categoryId is required" });
         }
 
-        const pageSize = 6;
+        let pageSize = 6;
+        if(pageSize<limit)
+            pageSize  =limit;
         const query = { categoryId: Number(categoryId) };  // 确保类型一致
 
         const total = await Product.countDocuments(query);
@@ -94,7 +96,8 @@ exports.addProduct = async (req, res) => {
             pageDesc,
             price,
             ProductNumber,
-            ProductDeliveryTime,
+            ProductDeliveryTime,//text
+            deliveryTime,//number
             ProductQuantity
         } = req.body;
         if (
@@ -121,7 +124,7 @@ exports.addProduct = async (req, res) => {
             ProductNumber,
             ProductQuantity,
             ProductDeliveryTime,
-            deliveryTime: parseInt(ProductDeliveryTime), // 可选：作为数字用于排序
+            deliveryTime: deliveryTime, // 可选：作为数字用于排序
             ProductImages: images
         });
 
@@ -134,7 +137,6 @@ exports.addProduct = async (req, res) => {
         res.status(500).json({ error: "Server error" });
     }
 };
-
 
 exports.editProduct = async (req, res) => {
     try {
