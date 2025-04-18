@@ -8,7 +8,7 @@ const orderSchema = new Schema({
   isPaid: { type: Boolean, default: false },
   isDelivered: { type: Boolean, default: false },
   deliveryDueDate: { type: Date },
-  refundStatus: { type: String, default: 'none' },
+  refundStatus: { type: String, default: 'none' },// None, Pending, Accept,Reject
   createdAt: { type: Date, default: Date.now },
   productList: [
     {

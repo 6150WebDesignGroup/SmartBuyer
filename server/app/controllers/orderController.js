@@ -180,7 +180,7 @@ exports.requestRefund = async (req, res) => {
       {
         refundRequested: true,
         refundReason: reason,
-        refundStatus: "pending",
+        refundStatus: "Pending",
         status: "refunding"
       },
       { new: true }
@@ -244,21 +244,22 @@ exports.deleteOrder = async (req, res) => {
 //Admin 去拿所有的refund请求
 exports.getAllRefund = async (req, res) => {
   try {
-
-    // 确保product正确填充
-    const orders = await Order.find()
+    // Ensure product is correctly populated
+    const orders = await Order.find({ status: 'Pending' }) // Filter for 'Pending' orders
         .populate({
           path: 'productList.product',
-          model: 'Product', // 确保这与你的Product模型名称匹配
-          select: 'name price cardDesc ProductImages' // 选择要包含的字段
+          model: 'Product',
+          select: 'name price cardDesc ProductImages',
         });
-    // 检查填充是否成功
+
+    // Check if population was successful
     if (orders.length > 0 && orders[0].productList && orders[0].productList.length > 0) {
       console.log('First product sample:', orders[0].productList[0].product);
     }
-    res.status(200).json(orders);
+
+    res.status(200).json(orders); // Respond with the filtered orders
   } catch (err) {
     console.error('Error fetching orders:', err.message);
     res.status(500).json({ error: "Server error: Unable to fetch orders", details: err.message });
   }
-}
+};

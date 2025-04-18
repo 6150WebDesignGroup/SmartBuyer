@@ -11,7 +11,7 @@ const AdminRefundPage = () => {
     useEffect(() => {
         const fetchRefundOrders = async () => {
             try {
-                const res = await axios.get('/admin/refundRequests'); // ⚠️ 预留接口
+                const res = await axios.get('http://localhost:5001/api/orders/getAllRefund');
                 setRefundOrders(res.data);
             } catch (err) {
                 console.error(err);
@@ -26,8 +26,12 @@ const AdminRefundPage = () => {
 
     const handleRefundAction = async (orderId, action) => {
         try {
-            // action: 'accept' or 'reject'
-            await axios.post(`/admin/refund/${action}`, { orderId }); // ⚠️ 预留接口
+            // action: 'approve' or 'reject'
+            await axios.put(`http://localhost:5001/api/orders/review-refund/${orderId}`, {
+                action, // 请求体中携带 action
+            });
+
+            // 更新状态，移除处理完的订单
             setRefundOrders(prev => prev.filter(order => order._id !== orderId));
         } catch (err) {
             console.error(`Failed to ${action} refund for order ${orderId}`, err);
