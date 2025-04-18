@@ -121,7 +121,7 @@ const App = () => {
               </UserBasicLayout>
             } />
 
-            <Route path="/refunds" element={
+            <Route path="/refund/:orderId" element={
               <UserBasicLayout currentUser={currentUser} handleLogout={handleLogout} cartItemCount={cartItemCount}>
                 <RefundPage />
               </UserBasicLayout>
