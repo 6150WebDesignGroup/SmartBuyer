@@ -1,0 +1,32 @@
+.homepage-background {
+    background-image: url('../assets/bg-desktop.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    min-height: 100vh;
+    padding: 60px 40px;
+  }
+  
+  
+  /* Card styling */
+  .custom-card {
+    border: 2.5px solid #000; /* darker and thicker */
+    border-radius: 10px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  
+  .custom-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    border-color: #007bff; /* blue border on hover */
+  }
+  
+  
+  /* Add spacing inside the card buttons */
+  .custom-card .btn {
+    margin-top: 0.5rem;
+  }
+  
