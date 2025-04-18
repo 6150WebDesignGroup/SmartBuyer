@@ -11,8 +11,9 @@ export const updateCartItemQuantity = (userId, productId, quantity) =>
 export const deleteCartItem = (userId, productId) =>
   axios.delete(`${CART_API}/${userId}/${productId}`);
 
-export const clearCart = (userId) =>
-  axios.delete(`${CART_API}/clear/${userId}`);
+export const clearCart = (userId) => {
+  return axios.delete(`${CART_API}/clear/${userId}`); 
+};
 
 export const addToCart = (userId, productId, quantity = 1) =>
   axios.post(`${CART_API}/addToCart`, {
