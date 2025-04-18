@@ -17,6 +17,7 @@ import DefaultLayout from './components/DefaultLayout';
 import { AuthProvider } from './AuthContext';
 import { getCurrentUser, logoutUser } from './services/authService';
 import './styles/auth.css';
+import AdminLayout from './components/AdminLayout';
 import UserBasicLayout from "./pages/UserBasicLayout";
 
 const App = () => {
@@ -134,9 +135,15 @@ const App = () => {
 
             {/* 管理员页面 */}
             <Route path="/admin/products" element={
-              <UserBasicLayout currentUser={currentUser} handleLogout={handleLogout} cartItemCount={cartItemCount}>
-                <ProductManagementPage />
-              </UserBasicLayout>
+              currentUser?.role === 'Admin' ? (
+                <AdminLayout currentUser={currentUser} handleLogout={handleLogout}>
+                  <ProductManagementPage />
+                </AdminLayout>
+              ) : (
+                <UserBasicLayout currentUser={currentUser} handleLogout={handleLogout} cartItemCount={cartItemCount}>
+                  <HomePage /> {/* fallback page for non-admin */}
+                </UserBasicLayout>
+              )
             } />
           </Routes>
         </Router>
