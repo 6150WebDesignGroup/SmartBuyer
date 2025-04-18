@@ -84,42 +84,53 @@ exports.getProductsByCategory = async (req, res) => {
 };
 
 
+// add product  must accept all the data flied
 exports.addProduct = async (req, res) => {
     try {
-        const { name, categoryId, cardDesc, pageDesc, price, ProductNumber } = req.body;
-
-        if (!name || !categoryId || !cardDesc || !price || !ProductNumber) {
-            return res.status(400).json({ error: "Missing required fields" });
-        }
-
-        if (!req.files || req.files.length === 0) {
-            return res.status(400).json({ error: "At least one image is required" });
-        }
-
-        // 用 categoryId 查找分类
-        const category = await ProductCategory.findOne({ ProductCateId: categoryId });
-        if (!category) {
-            return res.status(404).json({ error: "Category not found" });
-        }
-
-        const images = req.files.map(file => "imgs/Product/" + file.filename);
-
-        const product = new Product({
+        const {
             name,
-            categoryId: category.ProductCateId,        // 存 ID
-            categoryName: category.name,               // 可选：保留 name 用于展示
+            categoryId,
             cardDesc,
             pageDesc,
             price,
             ProductNumber,
+            ProductDeliveryTime,
+            ProductQuantity
+        } = req.body;
+        if (
+            !name || !categoryId || !cardDesc || !pageDesc ||
+            !price || !ProductNumber || !ProductDeliveryTime || !ProductQuantity
+        ) {
+            return res.status(400).json({ error: "Missing required fields" });
+        }
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({ error: "At least one image is required" });
+        }
+        const category = await ProductCategory.findOne({ ProductCateId: categoryId });
+        if (!category) {
+            return res.status(404).json({ error: "Category not found" });
+        }
+        const images = req.files.map(file => "imgs/Product/" + file.filename);
+        const product = new Product({
+            name,
+            categoryId: category.ProductCateId,
+            categoryName: category.name,
+            cardDesc,
+            pageDesc,
+            price,
+            ProductNumber,
+            ProductQuantity,
+            ProductDeliveryTime,
+            deliveryTime: parseInt(ProductDeliveryTime), // 可选：作为数字用于排序
             ProductImages: images
         });
 
         await product.save();
 
         res.status(200).json({ message: "Product created", product });
+
     } catch (err) {
-        console.error(err);
+        console.error("Add Product Error:", err);
         res.status(500).json({ error: "Server error" });
     }
 };
