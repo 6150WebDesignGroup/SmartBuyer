@@ -130,22 +130,22 @@ async function seed() {
     await Delivery.insertMany(deliveries);
 
     // Cart
-    const carts = insertedUsers.map((user) => {
-        const product = faker.helpers.arrayElement(insertedProducts);
-        const quantity = faker.number.int({ min: 1, max: 3 });
-        return {
-            userId: user._id,
-            items: [
-                {
-                    productId: product._id,
-                    quantity,
-                    price: product.price,
-                    totalPrice: quantity * product.price
-                }
-            ]
-        };
-    });
-    await Cart.insertMany(carts);
+    // const carts = insertedUsers.map((user) => {
+    //     const product = faker.helpers.arrayElement(insertedProducts);
+    //     const quantity = faker.number.int({ min: 1, max: 3 });
+    //     return {
+    //         userId: user._id,
+    //         items: [
+    //             {
+    //                 productId: product._id,
+    //                 quantity,
+    //                 price: product.price,
+    //                 totalPrice: quantity * product.price
+    //             }
+    //         ]
+    //     };
+    // });
+    // await Cart.insertMany(carts);
 
     console.log("Fake data seeded successfully!");
     await mongoose.disconnect();

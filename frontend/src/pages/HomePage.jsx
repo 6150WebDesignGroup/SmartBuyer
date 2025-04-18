@@ -1,12 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../AuthContext';
+
+import UserNavbar from "../components/userNavbar";
+
+
 const HomePage = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [sortType, setSortType] = useState('price');
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+    const navigate = useNavigate();
+
+    const { currentUser } = useAuth();
+    const isLoggedIn = !!currentUser;
 
     const fetchProducts = async () => {
         setLoading(true);
@@ -30,7 +40,7 @@ const HomePage = () => {
 
             const data = json.productLists.map(p => ({
                 _id: p._id,
-                name: p.name,
+                name: p.productName,
                 category: p.categoryName,
                 price: p.price,
                 deliveryTime: p.deliveryTime || 'N/A',
@@ -47,11 +57,10 @@ const HomePage = () => {
         }
     };
 
-    // add product to cart
     const handelAddToCart = async (product) => {
         const user = await JSON.parse(localStorage.getItem("user"));
         console.log("LocalStorage user:", localStorage.getItem("user"));
-        if (!user || ! user.UserId) {
+        if (!user || !user.UserId) {
             alert("Please log in to add items to your cart.");
             return;
         }
@@ -62,11 +71,7 @@ const HomePage = () => {
             quantity: 1
         };
         try {
-            const res = await axios.post("http://localhost:5001/api/cart/addToCart", {
-                userId: user.UserId,
-                productId: product._id,
-                quantity: 1
-            });
+            const res = await axios.post("http://localhost:5001/api/cart/addToCart", payload);
 
             if (res.status === 200) {
                 alert("Product added to cart!");
@@ -77,9 +82,7 @@ const HomePage = () => {
             console.error("Axios error:", error);
             alert("Error adding to cart.");
         }
-
     };
-
 
     useEffect(() => {
         fetchProducts();
@@ -91,18 +94,59 @@ const HomePage = () => {
     };
 
     return (
-        <div>
-            <div className="container my-5">
-                <h2 className="mb-4 text-center">Welcome to Our Store</h2>
+        <div className="container my-5">
+            <h2 className="mb-4 text-center">Welcome to Our Store</h2>
 
-                <div className="mb-4 d-flex justify-content-center align-items-center">
-                    <label className="me-2 fw-bold">Sort by:</label>
-                    <select className="form-select w-auto" value={sortType} onChange={e => setSortType(e.target.value)}>
-                        <option value="price">Price</option>
-                        <option value="name">Name</option>
-                        <option value="time">Delivery Time</option>
-                    </select>
+            <div className="mb-4 d-flex justify-content-center align-items-center">
+                <label className="me-2 fw-bold">Sort by:</label>
+                <select className="form-select w-auto" value={sortType} onChange={e => setSortType(e.target.value)}>
+                    <option value="price">Price</option>
+                    <option value="productName">Name</option>
+                    <option value="deliveryTime">Delivery Time</option>
+                </select>
+            </div>
+
+            {loading ? (
+                <div className="text-center">
+                    <div className="spinner-border" role="status"></div>
                 </div>
+
+            ) : (
+                <div className="row">
+                    {products.map(product => (
+                        <div key={product._id} className="col-md-4 mb-4">
+                            <div className="card h-100">
+                                <img
+                                    src={product.image || 'https://via.placeholder.com/300'}
+                                    className="card-img-top"
+                                    alt={product.name}
+                                    style={{ height: '200px', objectFit: 'cover' }}
+                                />
+                                <div className="card-body d-flex flex-column">
+                                    <h5 className="card-title">{product.name}</h5>
+                                    <p className="card-text text-muted">Category: {product.category}</p>
+                                    <p className="card-text">Price: ${product.price}</p>
+                                    <p className="card-text">Delivery: {product.deliveryTime}</p>
+                                    <p className="card-text">Qty: {product.quantity}</p>
+                                    <button
+                                        className="btn mt-auto mb-2"
+                                        style={{
+                                            backgroundColor: isLoggedIn ? '#0d6efd' : '#adb5bd',
+                                            color: isLoggedIn ? 'white' : 'black',
+                                            cursor: isLoggedIn ? 'pointer' : 'not-allowed',
+                                        }}
+                                        disabled={!isLoggedIn}
+                                        onClick={() => handelAddToCart(product)}
+                                    >
+                                        Add to Cart
+                                    </button>
+                                    <button
+                                        className="btn btn-outline-info"
+                                        onClick={() => navigate(`/product/${product._id}`)}
+                                    >
+                                        Learn More
+                                    </button>
+
 
                 {loading ? (
                     <div className="text-center">
@@ -129,6 +173,7 @@ const HomePage = () => {
                                             Add to Cart
                                         </button>
                                     </div>
+
                                 </div>
                             </div>
                         ))}

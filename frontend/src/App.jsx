@@ -141,6 +141,7 @@ const App = () => {
           </Routes>
         </Router>
       </AuthProvider>
+
   );
 };
 

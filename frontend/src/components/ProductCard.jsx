@@ -1,22 +1,25 @@
 import React from 'react';
 
-const ProductCard = ({ product }) => {
-  return (
-    <div className="card h-100">
-      <img
-        src={product.image || 'https://via.placeholder.com/150'}
-        className="card-img-top"
-        alt={product.name}
-        style={{ objectFit: 'cover', height: '200px' }}
-      />
-      <div className="card-body d-flex flex-column">
-        <h5 className="card-title">{product.name}</h5>
-        <p className="card-text text-muted">${product.price.toFixed(2)}</p>
-        <p className="card-text">{product.description?.slice(0, 60)}...</p>
-        <button className="btn btn-primary mt-auto">Add to Cart</button>
-      </div>
-    </div>
-  );
+const ProductCard = ({ product, onAddToCart, onLearnMore }) => {
+    return (
+        <div className="card h-100 d-flex flex-column justify-content-between">
+            <div className="card-body">
+                <h5 className="card-title">{product.name}</h5>
+                <p className="card-text">Category: {product.category}</p>
+                <p className="card-text">Price: ${product.price}</p>
+                <p className="card-text">Delivery: {product.deliveryTime}</p>
+                <p className="card-text">Qty: {product.stock}</p>
+            </div>
+            <div className="card-footer bg-transparent border-top-0 d-flex gap-2">
+                <button className="btn btn-primary flex-fill" onClick={onAddToCart}>
+                    Add to Cart
+                </button>
+                <button className="btn btn-outline-secondary flex-fill" onClick={onLearnMore}>
+                    Learn More
+                </button>
+            </div>
+        </div>
+    );
 };
 
 export default ProductCard;
