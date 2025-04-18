@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getUserOrders, payOrder, deleteOrder } from '../services/orderService'; 
+import { getUserOrders, payOrder, deleteOrder } from '../services/orderService';
 import { useNavigate } from 'react-router-dom';
 import { Spinner, Alert } from 'react-bootstrap';
 
@@ -41,13 +41,13 @@ const OrderPage = () => {
 
   const handlePay = (orderId) => {
     payOrder(orderId)
-        .then(() => {
-          // 不刷新整个页面，而是重新获取订单数据
-          getUserOrders(userId)
-              .then(res => setOrders(res.data))
-              .catch(err => console.error('Failed to fetch orders', err));
-        })
-        .catch(err => console.error('Payment failed', err));
+      .then(() => {
+
+        getUserOrders(userId)
+          .then(res => setOrders(res.data))
+          .catch(err => console.error('Failed to fetch orders', err));
+      })
+      .catch(err => console.error('Payment failed', err));
   };
 
   const handleRefund = (orderId) => {
@@ -64,22 +64,22 @@ const OrderPage = () => {
     }
   };
 
-  // Get product name from potentially different data structures
+
   const getProductName = (item) => {
-  
+
     if (item.product && typeof item.product === 'object' && item.product.name) {
       return item.product.name;
     } else if (item.productName) {
       return item.productName;
     } else if (typeof item.product === 'string') {
-    
+
       return `Product ID: ${item.product.substring(0, 8)}...`;
     } else {
       return `Product Item`;
     }
   };
 
-  // Countdown calculation logic
+
   const getDaysRemaining = (deliveryDueDate) => {
     if (!deliveryDueDate) return 0;
     const due = new Date(deliveryDueDate);
@@ -88,18 +88,17 @@ const OrderPage = () => {
     return diffDays > 0 ? diffDays : 0;
   };
 
-  // Hours and minutes remaining for countdown
   const getTimeRemaining = (deliveryDueDate) => {
     if (!deliveryDueDate) return { hours: 0, minutes: 0 };
-    
+
     const due = new Date(deliveryDueDate);
     const diffTime = due.getTime() - now.getTime();
-    
+
     if (diffTime <= 0) return { hours: 0, minutes: 0 };
-    
+
     const diffHours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const diffMinutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
-    
+
     return { hours: diffHours, minutes: diffMinutes };
   };
 
@@ -113,14 +112,14 @@ const OrderPage = () => {
   }
 
   return (
-      <div className="container mt-4">
-        <h2>Your Orders</h2>
+    <div className="container mt-4">
+      <h2>Your Orders</h2>
 
       {error && (
         <Alert variant="danger">
           {error}
-          <button 
-            className="btn btn-outline-primary ms-3" 
+          <button
+            className="btn btn-outline-primary ms-3"
             onClick={() => window.location.reload()}
           >
             Refresh Page
@@ -132,7 +131,7 @@ const OrderPage = () => {
         <p className="text-muted mt-4">You have no orders yet.</p>
       ) : (
         orders.map(order => (
-          <div 
+          <div
             key={order._id}
             className="border rounded shadow-sm mb-4 p-3 bg-white"
           >
@@ -165,14 +164,16 @@ const OrderPage = () => {
                       <span className="text-success">Delivered</span>
                     ) : (
                       <div>
-                        Estimated delivery: 
-                        <span className="ms-1 fw-bold">
-                          {getDaysRemaining(order.deliveryDueDate)} day(s) 
+                        Estimated delivery:
+                        <span className="ms-1 fw-bold text-primary">
                           {getDaysRemaining(order.deliveryDueDate) > 0 && (
-                            <span className="ms-1 fw-bold text-primary">
-                              {getTimeRemaining(order.deliveryDueDate).hours}h 
+                            <>
+                              {getTimeRemaining(order.deliveryDueDate).hours}h
                               {getTimeRemaining(order.deliveryDueDate).minutes}m remaining
-                            </span>
+                            </>
+                          )}
+                          {getDaysRemaining(order.deliveryDueDate) <= 0 && (
+                            <span className="text-danger">Delivery overdue</span>
                           )}
                         </span>
                       </div>
