@@ -88,12 +88,32 @@ const LoginPage = () => {
   };
 
   return (
-    <div>
-
-      <div className="auth-container">
-        <div className="auth-form-container">
-          <div className="auth-logo">
-            <img src="/logo.png" alt="SmartBuyer" />
+    <div className="auth-container">
+      <div className="auth-form-container">
+        <h1>Sign in</h1>
+        
+        {serverError && (
+          <div className="auth-alert auth-alert-error">
+            <div className="auth-alert-icon">!</div>
+            <div className="auth-alert-message">
+              <span>There was a problem</span>
+              <p>{serverError}</p>
+            </div>
+          </div>
+        )}
+        
+        <form onSubmit={handleSubmit} className="auth-form">
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
+            <input 
+              type="email" 
+              id="email" 
+              name="email" 
+              value={formData.email}
+              onChange={handleChange}
+              className={errors.email ? 'error' : ''}
+            />
+            {errors.email && <p className="error-text">{errors.email}</p>}
           </div>
 
           <h1>Sign in</h1>
