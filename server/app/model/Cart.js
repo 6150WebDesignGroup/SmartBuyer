@@ -10,7 +10,7 @@ const CartItemSchema = new mongoose.Schema({
 });
 
 const CartSchema = new mongoose.Schema({
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, unique: true }, // 每个用户一个 cart
+    userId: { type: Number, required: true, unique: true },  // 每个用户一个 cart
     items: [CartItemSchema], // 商品列表
     LastUpdate: { type: Date, default: Date.now }
 });
