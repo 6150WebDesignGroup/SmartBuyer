@@ -16,6 +16,7 @@ import AuthLayout from './components/AuthLayout';
 import DefaultLayout from './components/DefaultLayout';
 import { AuthProvider } from './AuthContext';
 import { getCurrentUser, logoutUser } from './services/authService';
+import './styles/background.css';
 import AdminLayout from './components/AdminLayout';
 import UserBasicLayout from "./pages/UserBasicLayout";
 
@@ -120,7 +121,7 @@ const App = () => {
               </UserBasicLayout>
             } />
 
-            <Route path="/refunds" element={
+            <Route path="/refund/:orderId" element={
               <UserBasicLayout currentUser={currentUser} handleLogout={handleLogout} cartItemCount={cartItemCount}>
                 <RefundPage />
               </UserBasicLayout>

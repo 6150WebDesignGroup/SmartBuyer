@@ -72,7 +72,13 @@ async function seed() {
                 pageDesc: faker.lorem.paragraph(),
                 price: parseFloat(faker.commerce.price(10, 999, 2)),
                 ProductQuantity: faker.number.int({ min: 10, max: 100 }).toString(),
-                ProductImages: ["imgs/Product/ProductImg-1744811460201.png"],
+                ProductImages: faker.helpers.arrayElements([
+                    "imgs/Product/ProductImg-1744811460201.png",
+                    "imgs/Product/ProductImg-1744998285816.png",
+                    "imgs/Product/ProductImg-1744998720519.png",
+                    "imgs/Product/ProductImg-1744998742349.png"
+                ], { min: 2, max: 4 }),
+
                 ProductDeliveryTime: `${faker.number.int({ min: 1, max: 7 })} days`,
                 deliveryTime: faker.number.int({ min: 1, max: 7 })
             });

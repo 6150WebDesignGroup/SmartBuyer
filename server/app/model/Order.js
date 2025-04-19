@@ -1,58 +1,21 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const OrderItemSchema = new mongoose.Schema({
-  product: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
-  quantity: { type: Number, required: true, default: 1 }
+const orderSchema = new Schema({
+  userId: { type: Number, required: true },
+  totalAmount: { type: Number, required: true },
+  status: { type: String, default: 'Pending' },
+  isPaid: { type: Boolean, default: false },
+  isDelivered: { type: Boolean, default: false },
+  deliveryDueDate: { type: Date },
+  refundStatus: { type: String, default: 'none' },// None, Pending, Accept,Reject
+  createdAt: { type: Date, default: Date.now },
+  productList: [
+    {
+      product: { type: Schema.Types.ObjectId, ref: 'Product' }, 
+      quantity: { type: Number, required: true }
+    }
+  ]
 });
 
-const OrderSchema = new mongoose.Schema({
-
-  userId: {
-    type: Number,
-    required: true
-  },
-  productList: [OrderItemSchema],
-  totalAmount: {
-    type: Number,
-    required: true
-  },
-  isPaid: {
-    type: Boolean,
-    default: false
-  },
-  paymentDate: {
-    type: Date
-  },
-  refundRequested: {
-    type: Boolean,
-    default: false
-  },
-  refundReason: {
-    type: String
-  },
-  refundStatus: {
-    type: String,
-    enum: ['none', 'pending', 'approved', 'rejected'],
-    default: 'none'
-  },
-  status: {
-    type: String,
-    required: true,
-    default: 'pending' // paid、refunding、refunded
-  },
-  deliveryDueDate: {
-    type: Date,
-    required: false
-  },
-  isDelivered: {
-    type: Boolean,
-    default: false
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  }
-
-});
-
-module.exports = mongoose.model("Order", OrderSchema);
+module.exports = mongoose.model("Order", orderSchema);

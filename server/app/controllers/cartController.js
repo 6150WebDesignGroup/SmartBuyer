@@ -6,7 +6,7 @@ const Product = require('../model/Product');
  * Returns an array of cart items, each with populated product details.
  */
 const getCartByUserId = async (req, res) => {
-  const { userId } = req.params; // 小写 userId
+  const { userId } = req.params;
   try {
     const cart = await Cart.findOne({ userId })
                            .populate('items.productId');
@@ -24,7 +24,7 @@ const getCartByUserId = async (req, res) => {
  * Update the quantity of a specific item in the cart.
  */
 const updateCartItemQuantity = async (req, res) => {
-  const { userId } = req.params; // 小写 userId
+  const { userId } = req.params;
   const { productId, quantity } = req.body;
 
   try {
@@ -54,7 +54,7 @@ const updateCartItemQuantity = async (req, res) => {
  * Delete a single item from the cart.
  */
 const deleteCartItem = async (req, res) => {
-  const { userId, productId } = req.params; // 小写 userId
+  const { userId, productId } = req.params;
 
   try {
     const cart = await Cart.findOne({ userId });
@@ -76,7 +76,7 @@ const deleteCartItem = async (req, res) => {
  * Clear all items in a user's cart.
  */
 const clearCart = async (req, res) => {
-  const { userId } = req.params; // 小写 userId
+  const { userId } = req.params;
 
   try {
     const cart = await Cart.findOne({ userId });
@@ -101,11 +101,10 @@ const clearCart = async (req, res) => {
  */
 const addToCart = async (req, res) => {
   try {
-    // ─────── 修改开始 ───────
+
     // 1) 将原来的大写 UserId 改为小写 userId
     // const { UserId, productId, quantity = 1 } = req.body;
     const { userId, productId, quantity = 1 } = req.body;
-    // ─────── 修改结束 ───────
 
     // 校验产品是否存在
     const product = await Product.findById(productId);
@@ -116,11 +115,10 @@ const addToCart = async (req, res) => {
     const price = product.price;
     const totalPrice = price * quantity;
 
-    // 查找或创建购物车（都用小写 userId）
     let cart = await Cart.findOne({ userId });
     if (!cart) {
       cart = new Cart({
-        userId,               // ── 修改：这里也用小写 userId
+        userId,
         items: [{
           productId,
           quantity,

@@ -3,7 +3,6 @@ import axios from 'axios';
 
 const SearchPage = () => {
   const [query, setQuery] = useState('');
-  const [sortOption, setSortOption] = useState('');
   const [results, setResults] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -28,18 +27,6 @@ const SearchPage = () => {
     fetchResults(1);
   };
 
-  const handleSortChange = (e) => {
-    const option = e.target.value;
-    setSortOption(option);
-
-    const sorted = [...results];
-    if (option === 'price-asc') {
-      sorted.sort((a, b) => a.price - b.price);
-    } else if (option === 'price-desc') {
-      sorted.sort((a, b) => b.price - a.price);
-    }
-    setResults(sorted);
-  };
 
   const handleNextPage = () => {
     if (page < totalPages) {
@@ -75,15 +62,6 @@ const SearchPage = () => {
           </button>
         </div>
 
-        {/* Sort Dropdown */}
-        <div className="mb-3">
-          <label className="me-2"><strong>Sort by:</strong></label>
-          <select value={sortOption} onChange={handleSortChange}>
-            <option value="">-- Select --</option>
-            <option value="price-asc">Price (Low → High)</option>
-            <option value="price-desc">Price (High → Low)</option>
-          </select>
-        </div>
 
         {/* Search Results */}
         <div className="row">

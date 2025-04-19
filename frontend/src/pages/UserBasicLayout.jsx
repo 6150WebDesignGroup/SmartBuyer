@@ -1,5 +1,5 @@
 import React from 'react';
-import UserNavbar from '../components/UserNavBar';
+import UserNavbar from '../components/userNavbar';
 
 const DefaultLayout = ({ children, currentUser, handleLogout, cartItemCount }) => {
     return (
