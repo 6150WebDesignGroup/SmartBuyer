@@ -1,17 +1,38 @@
+/* 注册页背景样式：使用绿色图案背景 + 留白 + 居中 + 半透明遮罩 */
 .register-page {
+    background-color: #f8f9fa;
     background-image: url('../assets/register-bg.png');
-    background-size: cover;
-    background-position: center;
     background-repeat: no-repeat;
+    background-position: center;
+    background-size: 85%;
+    background-attachment: fixed;
     min-height: 100vh;
+    position: relative;
+  
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 40px 16px;
+    padding: 40px;
   }
   
+  /* 半透明遮罩：降低背景图对比度、增强清晰度 */
+  .register-page::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 5%;
+    right: 5%;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.5);
+    z-index: 0;
+    border-radius: 12px;
+  }
+  
+  /* 注册表单卡片区域 */
   .auth-form-container {
-    background-color: rgba(255, 255, 255, 0.92); /* ✅ 半透明提升对比度 */
+    position: relative;
+    z-index: 1;
+    background-color: rgba(255, 255, 255, 0.92);
     padding: 32px;
     max-width: 420px;
     width: 100%;
@@ -19,6 +40,7 @@
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   }
   
+  /* 标题样式 */
   .auth-form-container h1 {
     text-align: center;
     font-size: 24px;
@@ -26,20 +48,59 @@
     color: #1976d2;
   }
   
+  /* 可选 logo 样式（如未隐藏） */
   .auth-logo img {
     max-width: 140px;
     display: block;
     margin: 0 auto 20px;
   }
   
-  .auth-legal,
-  .auth-divider {
-    margin-top: 20px;
-    text-align: center;
-    font-size: 13px;
-    color: #555;
+  /* 输入字段的标签 */
+  .auth-form-container label {
+    display: block;
+    margin-bottom: 6px;
+    color: #333;
+    font-weight: bold;
   }
   
+  /* 输入框 */
+  .auth-form-container input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 16px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .auth-form-container input:focus {
+    border-color: #1976d2;
+    box-shadow: 0 0 4px rgba(25, 118, 210, 0.4);
+    outline: none;
+  }
+  
+  /* 注册按钮样式 */
+  .auth-button {
+    margin-top: 12px;
+    background-color: #1976d2;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    width: 100%;
+    font-size: 15px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .auth-button:hover {
+    background-color: #1565c0;
+    transform: translateY(-2px);
+  }
+  
+  /* 辅助跳转按钮（如返回登录） */
   .auth-secondary-button {
     margin-top: 14px;
     display: block;
@@ -58,22 +119,12 @@
     background-color: #ccc;
   }
   
-  .auth-button {
-    margin-top: 12px;
-    background-color: #1976d2;
-    border: none;
-    padding: 12px;
-    border-radius: 8px;
-    width: 100%;
-    font-size: 15px;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-  }
-  
-  .auth-button:hover {
-    background-color: #1565c0;
-    transform: translateY(-2px);
+  /* 额外提示（隐私、协议等） */
+  .auth-legal,
+  .auth-divider {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 13px;
+    color: #555;
   }
   

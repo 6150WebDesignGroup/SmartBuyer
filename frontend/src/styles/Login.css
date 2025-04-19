@@ -1,18 +1,38 @@
+/* 登录页背景容器样式 */
 .auth-container {
+    background-color: #f8f9fa;
     background-image: url('../assets/register-bg.png');
-    background-size: cover;
-    background-position: center;
     background-repeat: no-repeat;
+    background-position: center;
+    background-size: 85%; /* 控制绿色图宽度 */
+    background-attachment: fixed;
     min-height: 100vh;
+    position: relative;
+  
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 40px 16px;
+    padding: 40px;
   }
   
+  /* 添加半透明白色遮罩，降低绿色背景图的亮度 */
+  .auth-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 5%;   /* 左右留白 */
+    right: 5%;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.5);  /* 半透明白色 */
+    z-index: 0;
+    border-radius: 12px;
+  }
   
+  /* 登录表单卡片样式 */
   .auth-form-container {
-    background-color: rgba(255, 255, 255, 0.92); /* ✅ 半透明白色 */
+    position: relative;
+    z-index: 1;
+    background-color: rgba(255, 255, 255, 0.92); /* 半透明白底 */
     padding: 30px 40px;
     border-radius: 12px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
@@ -20,7 +40,7 @@
     width: 100%;
   }
   
-  
+  /* 标题样式 */
   .auth-form-container h1 {
     text-align: center;
     margin-bottom: 24px;
@@ -28,6 +48,7 @@
     font-size: 24px;
   }
   
+  /* 表单标签 */
   .auth-form-container label {
     display: block;
     margin-bottom: 6px;
@@ -35,6 +56,7 @@
     font-weight: bold;
   }
   
+  /* 输入框样式 */
   .auth-form-container input[type="email"],
   .auth-form-container input[type="password"] {
     width: 100%;
@@ -46,6 +68,7 @@
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
   }
   
+  /* 输入框聚焦时动画 */
   .auth-form-container input[type="email"]:focus,
   .auth-form-container input[type="password"]:focus {
     border-color: #1976d2;
@@ -53,6 +76,7 @@
     outline: none;
   }
   
+  /* 登录按钮 */
   .auth-form-container button[type="submit"] {
     width: 100%;
     background-color: #1976d2;
@@ -66,11 +90,13 @@
     transition: background-color 0.3s ease, transform 0.2s ease;
   }
   
+  /* 按钮悬停效果 */
   .auth-form-container button[type="submit"]:hover {
     background-color: #1565c0;
     transform: translateY(-2px);
   }
   
+  /* 注册引导文字 */
   .auth-form-container .signup-redirect {
     margin-top: 18px;
     text-align: center;
@@ -88,6 +114,7 @@
     text-decoration: underline;
   }
   
+  /* 页脚 */
   .auth-footer {
     margin-top: auto;
     padding: 16px 0;
