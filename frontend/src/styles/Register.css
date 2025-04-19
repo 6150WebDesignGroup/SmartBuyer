@@ -1,0 +1,79 @@
+.register-page {
+    background-image: url('../assets/register-bg.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 16px;
+  }
+  
+  .auth-form-container {
+    background-color: rgba(255, 255, 255, 0.92); /* ✅ 半透明提升对比度 */
+    padding: 32px;
+    max-width: 420px;
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  }
+  
+  .auth-form-container h1 {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #1976d2;
+  }
+  
+  .auth-logo img {
+    max-width: 140px;
+    display: block;
+    margin: 0 auto 20px;
+  }
+  
+  .auth-legal,
+  .auth-divider {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 13px;
+    color: #555;
+  }
+  
+  .auth-secondary-button {
+    margin-top: 14px;
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+    background-color: #e0e0e0;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  }
+  
+  .auth-secondary-button:hover {
+    background-color: #ccc;
+  }
+  
+  .auth-button {
+    margin-top: 12px;
+    background-color: #1976d2;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    width: 100%;
+    font-size: 15px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .auth-button:hover {
+    background-color: #1565c0;
+    transform: translateY(-2px);
+  }
+  

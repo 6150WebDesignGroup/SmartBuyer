@@ -16,7 +16,6 @@ import AuthLayout from './components/AuthLayout';
 import DefaultLayout from './components/DefaultLayout';
 import { AuthProvider } from './AuthContext';
 import { getCurrentUser, logoutUser } from './services/authService';
-import './styles/auth.css';
 import './styles/background.css';
 import AdminLayout from './components/AdminLayout';
 import UserBasicLayout from "./pages/UserBasicLayout";

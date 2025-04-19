@@ -66,6 +66,7 @@ const ProductManagementPage = () => {
     useEffect(() => {
         if (isAdmin) {
             fetchCategories();
+            fetchAllProducts();
         }
     }, [isAdmin]);
 
@@ -73,68 +74,38 @@ const ProductManagementPage = () => {
     const fetchAllProducts = async () => {
         setLoading(true);
         try {
-            // 首先获取所有类别
             const categoriesResponse = await axios.get('/product/getAllCategory');
             let categoryData = categoriesResponse.data;
-            
+
             if (!Array.isArray(categoryData) && categoryData.categories) {
                 categoryData = categoryData.categories;
             }
-            
-            if (!Array.isArray(categoryData) && typeof categoryData === 'object') {
-                if (Array.isArray(categoryData["categories"])) {
-                    categoryData = categoryData["categories"];
-                }
-            }
-            
+
             const categoriesArray = Array.isArray(categoryData) ? categoryData : [];
             setCategories(categoriesArray);
-            
-            // 为每个类别获取产品
+
             const productsByCategory = {};
-            
+
             for (const category of categoriesArray) {
-                try {
-                    const response = await axios.post('/product/byCategory', {
-                        categoryId: Number(category.ProductCateId),
-                        page: 1,
-                        limit: 100,
-                        _t: new Date().getTime() // 防止缓存
-                    });
-                    
-                    console.log(`Products for ${category.name}:`, response.data);
-                    
-                    let productData = response.data;
-                    if (productData && productData.products) {
-                        productData = productData.products;
-                    }
-                    
-                    productsByCategory[category.name] = Array.isArray(productData) 
-                        ? productData 
-                        : [];
-                        
-                    console.log(`Saved ${productsByCategory[category.name].length} products for ${category.name}`);
-                } catch (error) {
-                    console.error(`Error fetching products for ${category.name}:`, error);
-                    productsByCategory[category.name] = [];
+                const response = await axios.post('/product/byCategory', {
+                    categoryId: Number(category.ProductCateId),
+                    page: 1,
+                    limit: 100,
+                    _t: new Date().getTime()
+                });
+
+                let productData = response.data;
+                if (productData && productData.products) {
+                    productData = productData.products;
                 }
+
+                productsByCategory[category.name] = Array.isArray(productData) ? productData : [];
             }
-            
-            console.log('All products by category:', productsByCategory);
+
             setProducts(productsByCategory);
-            
-            // 如果有类别，自动展开第一个
-            if (categoriesArray.length > 0) {
-                const firstCategory = categoriesArray[0].name;
-                setActiveKeys([firstCategory]);
-            }
-            
+
             setLoading(false);
-            
-            notification.success({
-                message: '刷新成功',
-                description: '所有产品数据已刷新'
-            });
+
         } catch (error) {
             console.error('Error fetching all products:', error);
             notification.error({
@@ -145,41 +116,41 @@ const ProductManagementPage = () => {
         }
     };
 
+
     // Fetch all categories
     const fetchCategories = async () => {
         setLoading(true);
         try {
             const response = await axios.get('/product/getAllCategory');
             console.log('Category response:', response);
-            
+
             // 如果返回的数据嵌套在categories字段中
             let categoryData = response.data;
-            
+
             // 如果数据嵌套在其他字段中，例如response.data.categories
             if (!Array.isArray(categoryData) && categoryData && categoryData.categories) {
                 categoryData = categoryData.categories;
             }
-            
+
             // 从网络请求的响应看，数据在categories字段下
             if (!Array.isArray(categoryData) && typeof categoryData === 'object') {
                 if (categoryData && Array.isArray(categoryData["categories"])) {
                     categoryData = categoryData["categories"];
                 }
             }
-            
+
             console.log('Processed categories:', categoryData);
-            
+
             // 确保它是一个数组
             const categoriesArray = Array.isArray(categoryData) ? categoryData : [];
-            
+
             // 先设置类别数据
             setCategories(categoriesArray);
-            
+
             // 如果有类别，自动展开第一个
             if (categoriesArray.length > 0) {
                 const firstCategory = categoriesArray[0].name;
-                setActiveKeys([firstCategory]);
-                
+
                 // 重要修改：使用回调函数确保数据已更新
                 setCategories(categoriesArray, () => {
                     // 使用 categoriesArray，而不是通过 state 访问
@@ -190,7 +161,7 @@ const ProductManagementPage = () => {
                     }
                 });
             }
-            
+
             setLoading(false);
         } catch (error) {
             console.error('Error fetching categories:', error);
@@ -221,21 +192,21 @@ const ProductManagementPage = () => {
             console.error('Category object is undefined');
             return;
         }
-        
+
         const categoryName = categoryObj.name;
-        
+
         try {
             console.log(`Fetching products for category: ${categoryName} using direct object`);
-            
+
             // 直接使用传入的类别对象，无需查找
             const categoryId = categoryObj.ProductCateId || categoryObj.categoryId;
             if (categoryId === undefined || categoryId === null) {
                 console.error('Invalid category ID:', categoryId);
                 return;
             }
-            
+
             console.log('Using categoryId:', categoryId, 'Type:', typeof categoryId);
-            
+
             // 调用API，传递正确类型的categoryId
             const response = await axios.post('/product/byCategory', {
                 categoryId: Number(categoryId),
@@ -243,26 +214,26 @@ const ProductManagementPage = () => {
                 limit: 100,
                 _t: new Date().getTime()
             });
-            
+
             console.log('Products response:', response);
-            
+
             let productData = response.data;
             if (productData && productData.products) {
                 productData = productData.products;
             }
-            
+
             setProducts(prev => ({
                 ...prev,
                 [categoryName]: Array.isArray(productData) ? productData : []
             }));
         } catch (error) {
             console.error(`Error fetching products for ${categoryName}:`, error);
-            
+
             notification.error({
                 message: 'Error',
                 description: `Failed to fetch products for ${categoryName}`
             });
-            
+
             setProducts(prev => ({
                 ...prev,
                 [categoryName]: []
@@ -276,11 +247,11 @@ const ProductManagementPage = () => {
             console.error('Category name is undefined');
             return;
         }
-        
+
         // 防止在 categories 未加载时调用
         if (!categories || categories.length === 0) {
             console.error('Categories not loaded yet - deferring fetch');
-            
+
             // 延迟重试，给类别数据加载的时间
             setTimeout(() => {
                 // 再次检查类别是否已加载
@@ -292,17 +263,17 @@ const ProductManagementPage = () => {
             }, 500);
             return;
         }
-        
+
         try {
             console.log(`Fetching products for category: ${categoryName}`);
-            
+
             // 找到对应的类别对象
             const category = categories.find(cat => cat && cat.name === categoryName);
             if (!category) {
                 console.error(`Cannot find category with name: ${categoryName}`);
                 return;
             }
-            
+
             // 使用新的函数实现
             fetchProductsByCategoryObj(category);
         } catch (error) {
@@ -317,7 +288,7 @@ const ProductManagementPage = () => {
         setCurrentCategory(categoryName);
         setCurrentProduct(null);
         setFileList([]);
-        
+
         // 找到对应类别
         const category = categories.find(cat => cat.name === categoryName);
         if (!category) {
@@ -328,16 +299,16 @@ const ProductManagementPage = () => {
             });
             return;
         }
-        
+
         console.log('Found category:', category);
-        
+
         // categoryId 必须是正确的数字类型
         // 在数据结构中，这应该是 ProductCateId 字段
-        const categoryId = typeof category.ProductCateId === 'number' ? category.ProductCateId : 
-                          (typeof category.categoryId === 'number' ? category.categoryId : 1);
-        
+        const categoryId = typeof category.ProductCateId === 'number' ? category.ProductCateId :
+            (typeof category.categoryId === 'number' ? category.categoryId : 1);
+
         console.log(`Setting categoryId to: ${categoryId} for category: ${categoryName}`);
-        
+
         // 重置表单并设置初始值
         form.resetFields();
         form.setFieldsValue({
@@ -346,7 +317,6 @@ const ProductManagementPage = () => {
             cardDesc: '',
             pageDesc: '',
             price: 0,
-            ProductNumber: `P-${Math.floor(Math.random() * 10000)}`,
             ProductDeliveryTime: '3-5 days',
             deliveryTime: 5,
             ProductQuantity: 10
@@ -378,7 +348,6 @@ const ProductManagementPage = () => {
             cardDesc: product.cardDesc,
             pageDesc: product.pageDesc,
             price: product.price,
-            ProductNumber: product.ProductNumber,
             ProductDeliveryTime: product.ProductDeliveryTime || '3-5 days',
             deliveryTime: product.deliveryTime || 5,
             ProductQuantity: product.ProductQuantity || 10
@@ -400,17 +369,17 @@ const ProductManagementPage = () => {
     const handleSubmit = async () => {
         try {
             console.log('提交按钮被点击');
-            
+
             // 表单验证前先打印当前表单值
             console.log('当前表单值:', form.getFieldsValue());
             console.log('当前图片文件:', fileList);
-            
+
             const values = await form.validateFields();
             console.log('表单验证通过，获取的值:', values);
-            
+
             // 检查必填字段
-            if (!values.name || !values.categoryId || !values.cardDesc || !values.pageDesc || 
-                !values.price || !values.ProductNumber || !values.ProductDeliveryTime || 
+            if (!values.name || !values.categoryId || !values.cardDesc || !values.pageDesc ||
+                !values.price|| !values.ProductDeliveryTime ||
                 !values.ProductQuantity) {
                 console.error('缺少必填字段');
                 notification.error({
@@ -419,7 +388,7 @@ const ProductManagementPage = () => {
                 });
                 return;
             }
-            
+
             // 检查图片上传
             if (fileList.length === 0) {
                 console.error('没有上传图片');
@@ -429,22 +398,21 @@ const ProductManagementPage = () => {
                 });
                 return;
             }
-            
+
             // 创建 FormData 对象
             const formData = new FormData();
             console.log('开始构建 FormData');
-            
+
             // 添加必填字段
             formData.append('name', values.name);
             formData.append('categoryId', values.categoryId);
             formData.append('cardDesc', values.cardDesc);
             formData.append('pageDesc', values.pageDesc);
             formData.append('price', values.price);
-            formData.append('ProductNumber', values.ProductNumber);
             formData.append('ProductDeliveryTime', values.ProductDeliveryTime);
             formData.append('deliveryTime', values.deliveryTime);
             formData.append('ProductQuantity', values.ProductQuantity);
-            
+
             // 添加图片文件
             let hasValidImage = false;
             fileList.forEach(file => {
@@ -457,7 +425,7 @@ const ProductManagementPage = () => {
                     // 对于编辑模式下已有的图片，可能需要添加特殊处理
                 }
             });
-            
+
             if (!hasValidImage && !editMode) {
                 console.error('所有上传的图片都无效');
                 notification.error({
@@ -466,19 +434,13 @@ const ProductManagementPage = () => {
                 });
                 return;
             }
-            
+
             // 输出表单数据内容进行检查
             console.log('FormData 内容:');
             for (let [key, value] of formData.entries()) {
                 console.log(`${key}: ${value instanceof File ? `File: ${value.name}` : value}`);
             }
-            
-            // 显示加载状态
-            notification.info({
-                message: '正在处理',
-                description: '正在提交产品数据，请稍候...'
-            });
-            
+
             // 发送请求
             console.log('准备发送API请求');
             let response;
@@ -498,22 +460,22 @@ const ProductManagementPage = () => {
                     }
                 });
             }
-            
+
             console.log('API 响应:', response);
-            
+
             // 显示成功消息
             notification.success({
                 message: 'Success',
                 description: editMode ? 'Product updated successfully' : 'Product added successfully'
             });
-            
+
             // 关闭模态框
             setModalVisible(false);
-            
-            await fetchAllProducts(); 
+
+            await fetchAllProducts();
         } catch (error) {
             console.error('提交表单时出错:', error);
-            
+
             if (error.errorFields) {
                 console.error('表单验证错误:', error.errorFields);
                 notification.error({
@@ -522,14 +484,14 @@ const ProductManagementPage = () => {
                 });
                 return;
             }
-            
+
             if (error.response) {
                 console.error('服务器响应错误:');
                 console.error('状态码:', error.response.status);
                 console.error('响应数据:', error.response.data);
                 console.error('响应头:', error.response.headers);
             }
-            
+
             notification.error({
                 message: 'Error',
                 description: error.response?.data?.error || error.message || 'Failed to save product'
@@ -555,25 +517,25 @@ const ProductManagementPage = () => {
     // Delete product API call
     const deleteProduct = async (product) => {
         try {
-            await axios.delete('/product/delete', {
-                data: { id: product._id }
-            });
-
-            notification.success({
-                message: 'Success',
-                description: 'Product deleted successfully',
-            });
-
-            // 刷新所有产品数据
-            fetchAllProducts();
+          // 1. 调用后端接口删除
+          await axios.delete('/product/delete', {
+            data: { id: product._id }
+          });
+      
+          // 2. 删除成功后，刷新所有产品（自动更新前端）
+          await fetchAllProducts();
+      
+          // ✅ 可选：控制自动展开当前分类
+          setActiveKeys([product.categoryName]);
         } catch (error) {
-            console.error('Error deleting product:', error);
-            notification.error({
-                message: 'Error',
-                description: 'Failed to delete product',
-            });
+          console.error('Error deleting product:', error);
+          notification.error({
+            message: 'Error',
+            description: 'Failed to delete product',
+          });
         }
-    };
+      };
+      
 
     // Render product items for a category
     const renderProductItems = (categoryName) => {
@@ -584,11 +546,11 @@ const ProductManagementPage = () => {
                 </div>
             );
         }
-        
+
         if (Array.isArray(products[categoryName]) && products[categoryName].length === 0) {
             return <div style={{ padding: 16 }}>No products found in this category</div>;
         }
-        
+
         return Array.isArray(products[categoryName]) ? products[categoryName].map(product => (
             <Card
                 key={product._id}
@@ -614,9 +576,7 @@ const ProductManagementPage = () => {
             >
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     <Image
-                        src={product.ProductImages && product.ProductImages.length > 0 
-                            ? product.ProductImages[0] 
-                            : '/placeholder-image.png'}
+                        src={`http://localhost:5001/${product.ProductImages[0]}`}
                         alt={product.name}
                         width={100}
                         height={100}
@@ -627,7 +587,6 @@ const ProductManagementPage = () => {
                         <h3>{product.name}</h3>
                         <p>Description: {product.cardDesc}</p>
                         <p>Price: ${product.price}</p>
-                        <p>Product Number: {product.ProductNumber || 'N/A'}</p>
                         <p>Quantity: {product.ProductQuantity || 'N/A'}</p>
                         {product.ProductDeliveryTime && (
                             <p>Delivery Time: {product.ProductDeliveryTime}</p>
@@ -657,22 +616,16 @@ const ProductManagementPage = () => {
 
     return (
         <div className="product-management-page">
-            <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <div className="page-header" style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
                 <Button
                     type="primary"
-                    onClick={fetchAllProducts}
+                    onClick={() => fetchAllProducts(true)} // ✅ 点击才弹出提示
                     icon={<ReloadOutlined />}
                 >
-                    刷新所有产品
-                </Button>
-                <Button
-                    type="primary"
-                    onClick={() => fetchCategories()}
-                    icon={<UploadOutlined />}
-                >
-                    刷新分类
+                    Refresh Products
                 </Button>
             </div>
+
 
             <Collapse
                 activeKey={activeKeys}
@@ -698,157 +651,149 @@ const ProductManagementPage = () => {
                                             e.stopPropagation();
                                             showAddModal(category.name);
                                         }}
-                                        >
-                                            Add Product
-                                        </Button>
-                                    </div>
-                                }
-                            >
-                                {renderProductItems(category.name)}
-                            </Panel>
-                        ))
-                    ) : (
-                        <div style={{ padding: 20, textAlign: 'center' }}>
-                            <p>No categories found. Please add categories first.</p>
-                        </div>
-                    )}
-                </Collapse>
-    
-                {/* Add/Edit Product Modal */}
-                <Modal
-                    title={editMode ? "Edit Product" : "Add New Product"}
-                    open={modalVisible}
-                    onCancel={handleCancel}
-                    footer={editMode ? [
-                        <Button key="cancel" onClick={handleCancel}>
-                            Cancel
-                        </Button>,
-                        <Button
-                            key="delete"
-                            danger
-                            onClick={() => {
-                                handleCancel();
-                                currentProduct && showDeleteConfirm(currentProduct);
-                            }}
+                                    >
+                                        Add Product
+                                    </Button>
+                                </div>
+                            }
                         >
-                            Delete
-                        </Button>,
-                        <Button key="submit" type="primary" onClick={handleSubmit}>
-                            Update
-                        </Button>,
-                    ] : [
-                        <Button key="cancel" onClick={handleCancel}>
-                            Cancel
-                        </Button>,
-                        <Button key="submit" type="primary" onClick={handleSubmit}>
-                            Save
-                        </Button>,
-                    ]}
-                    width={800}
-                >
-                    <Form
-                        form={form}
-                        layout="vertical"
+                            {renderProductItems(category.name)}
+                        </Panel>
+                    ))
+                ) : (
+                    <div style={{ padding: 20, textAlign: 'center' }}>
+                        <p>No categories found. Please add categories first.</p>
+                    </div>
+                )}
+            </Collapse>
+
+            {/* Add/Edit Product Modal */}
+            <Modal
+                title={editMode ? "Edit Product" : "Add New Product"}
+                open={modalVisible}
+                onCancel={handleCancel}
+                footer={editMode ? [
+                    <Button key="cancel" onClick={handleCancel}>
+                        Cancel
+                    </Button>,
+                    <Button
+                        key="delete"
+                        danger
+                        onClick={() => {
+                            handleCancel();
+                            currentProduct && showDeleteConfirm(currentProduct);
+                        }}
                     >
-                        <Form.Item
-                            name="name"
-                            label="Product Name"
-                            rules={[{ required: true, message: 'Please enter product name' }]}
+                        Delete
+                    </Button>,
+                    <Button key="submit" type="primary" onClick={handleSubmit}>
+                        Update
+                    </Button>,
+                ] : [
+                    <Button key="cancel" onClick={handleCancel}>
+                        Cancel
+                    </Button>,
+                    <Button key="submit" type="primary" onClick={handleSubmit}>
+                        Save
+                    </Button>,
+                ]}
+                width={800}
+            >
+                <Form
+                    form={form}
+                    layout="vertical"
+                >
+                    <Form.Item
+                        name="name"
+                        label="Product Name"
+                        rules={[{ required: true, message: 'Please enter product name' }]}
+                    >
+                        <Input />
+                    </Form.Item>
+
+                    <Form.Item
+                        name="categoryId"
+                        label="Category ID"
+                        hidden
+                    >
+                        <Input />
+                    </Form.Item>
+
+                    <Form.Item
+                        name="cardDesc"
+                        label="Card Description"
+                        rules={[{ required: true, message: 'Please enter card description' }]}
+                    >
+                        <TextArea rows={2} />
+                    </Form.Item>
+
+                    <Form.Item
+                        name="pageDesc"
+                        label="Page Description"
+                        rules={[{ required: true, message: 'Please enter page description' }]}
+                    >
+                        <TextArea rows={4} />
+                    </Form.Item>
+
+                    <Form.Item
+                        name="price"
+                        label="Price"
+                        rules={[{ required: true, message: 'Please enter product price' }]}
+                    >
+                        <InputNumber
+                            min={0}
+                            step={0.01}
+                            style={{ width: '100%' }}
+                            formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                            parser={value => value.replace(/\$\s?|(,*)/g, '')}
+                        />
+                    </Form.Item>
+
+                    <Form.Item
+                        name="ProductDeliveryTime"
+                        label="Delivery Time Description"
+                        rules={[{ required: true, message: 'Please enter delivery time description' }]}
+                    >
+                        <Input placeholder="e.g. 1-3 days" />
+                    </Form.Item>
+
+                    <Form.Item
+                        name="deliveryTime"
+                        label="Delivery Time (Days)"
+                        rules={[{ required: true, message: 'Please enter delivery time in days' }]}
+                    >
+                        <InputNumber min={1} style={{ width: '100%' }} />
+                    </Form.Item>
+
+                    <Form.Item
+                        name="ProductQuantity"
+                        label="Product Quantity"
+                        rules={[{ required: true, message: 'Please enter product quantity' }]}
+                    >
+                        <InputNumber min={1} style={{ width: '100%' }} />
+                    </Form.Item>
+
+                    <Form.Item
+                        name="imgFile"
+                        label="Product Images"
+                    >
+                        <Upload
+                            listType="picture-card"
+                            fileList={fileList}
+                            onChange={handleUploadChange}
+                            beforeUpload={() => false}
+                            multiple
                         >
-                            <Input />
-                        </Form.Item>
-    
-                        <Form.Item
-                            name="categoryId"
-                            label="Category ID"
-                            hidden
-                        >
-                            <Input />
-                        </Form.Item>
-    
-                        <Form.Item
-                            name="cardDesc"
-                            label="Card Description"
-                            rules={[{ required: true, message: 'Please enter card description' }]}
-                        >
-                            <TextArea rows={2} />
-                        </Form.Item>
-    
-                        <Form.Item
-                            name="pageDesc"
-                            label="Page Description"
-                            rules={[{ required: true, message: 'Please enter page description' }]}
-                        >
-                            <TextArea rows={4} />
-                        </Form.Item>
-    
-                        <Form.Item
-                            name="price"
-                            label="Price"
-                            rules={[{ required: true, message: 'Please enter product price' }]}
-                        >
-                            <InputNumber
-                                min={0}
-                                step={0.01}
-                                style={{ width: '100%' }}
-                                formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                                parser={value => value.replace(/\$\s?|(,*)/g, '')}
-                            />
-                        </Form.Item>
-    
-                        <Form.Item
-                            name="ProductNumber"
-                            label="Product Number"
-                            rules={[{ required: true, message: 'Please enter product number' }]}
-                        >
-                            <Input placeholder="e.g. P12345" />
-                        </Form.Item>
-    
-                        <Form.Item
-                            name="ProductDeliveryTime"
-                            label="Delivery Time Description"
-                            rules={[{ required: true, message: 'Please enter delivery time description' }]}
-                        >
-                            <Input placeholder="e.g. 1-3 days" />
-                        </Form.Item>
-    
-                        <Form.Item
-                            name="deliveryTime"
-                            label="Delivery Time (Days)"
-                            rules={[{ required: true, message: 'Please enter delivery time in days' }]}
-                        >
-                            <InputNumber min={1} style={{ width: '100%' }} />
-                        </Form.Item>
-    
-                        <Form.Item
-                            name="ProductQuantity"
-                            label="Product Quantity"
-                            rules={[{ required: true, message: 'Please enter product quantity' }]}
-                        >
-                            <InputNumber min={1} style={{ width: '100%' }} />
-                        </Form.Item>
-    
-                        <Form.Item
-                            name="imgFile"
-                            label="Product Images"
-                        >
-                            <Upload
-                                listType="picture-card"
-                                fileList={fileList}
-                                onChange={handleUploadChange}
-                                beforeUpload={() => false}
-                                multiple
-                            >
-                                {fileList.length >= 5 ? null : uploadButton}
-                            </Upload>
-                            <div style={{ marginTop: 8, color: '#888' }}>
-                                You must upload at least one product image (up to 5).
-                            </div>
-                        </Form.Item>
-                    </Form>
-                </Modal>
-            </div>
-        );
-    };
-    
-    export default ProductManagementPage;
+                            {fileList.length >= 5 ? null : uploadButton}
+                        </Upload>
+                        <div style={{ marginTop: 8, color: '#888' }}>
+                            You must upload at least one product image (up to 5).
+                        </div>
+                    </Form.Item>
+                </Form>
+            </Modal>
+        </div>
+    );
+};
+
+export default ProductManagementPage;
